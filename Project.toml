@@ -1,0 +1,8 @@
+name = "QuantumGB"
+uuid = "e6efa0c5-1cd0-4528-bbb2-cf1d4bca138c"
+authors = ["Marcel Wack <wac.marcel@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Oscar = "f1435218-dba5-11e9-1e4d-f1a5fab5fc13"
+QuantumAutomorphismGroups = "883b9390-e97b-4aff-939d-13410c6cb08d"
