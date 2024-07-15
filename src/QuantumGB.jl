@@ -9,10 +9,12 @@ export
     normal_form_noRedTail,
     normal_form_with_rep,
     interreduce!_noRedTail,
-    get_obstruction_pairs
+    get_obstruction_pairs,
+    getQuantumRelationsByType
 
 
 include("gbsteps.jl")
+#include("pointed_Bases.jl")
 
 
 end # module QuantumGB

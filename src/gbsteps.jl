@@ -27,6 +27,9 @@ function normal_form_noRedTail(
     f::Generic.FreeAssAlgElem{T},
     g::Vector{Generic.FreeAssAlgElem{T}},
 ) where T<:FieldElement
+    otp = "="^8*"Normal Form without Tail Reduction"*"="^8 * "\n"
+    otp *= "f = "*string(f)*"\n"
+    otp *="-"^50 * "\n"
     s = length(g)
     @label first
     i = 1
@@ -41,10 +44,16 @@ function normal_form_noRedTail(
     if ok && !iszero(f)
         qi = divexact(f.coeffs[1], g[i].coeffs[1])
         f = Generic._sub_rest(f, Generic.mul_term(qi, ml, g[i], mr), 1) # enforce lt cancelation
+        otp *= "Reducing f by "*string(qi)*"*"*string(g[i])*"\n"
+        otp *= "new f = "*string(f)*"\n"
+        otp *="-"^50 * "\n"
+
         #Check if the leading monomial has been killed
         
         @goto first
     else
+        otp *= "="^4*"End of Normal Form without Tail Reduction"*"="^5 * "\n"
+        println(otp)
         return f
     end
 end
@@ -63,7 +72,7 @@ g = [x^2, y^2, x*y];
 
 zr,  dct = normal_form_with_rep(f, g);
 dct
-
+zr
 # output
 
 Dict{AbstractAlgebra.Generic.FreeAssAlgElem, AbstractAlgebra.Generic.FreeAssAlgElem{QQFi
@@ -78,7 +87,7 @@ function normal_form_with_rep(
     g::Vector{Generic.FreeAssAlgElem{T}},
 ) where {T}
 
-    rep_dict = Dict{Generic.FreeAssAlgElem, Generic.FreeAssAlgElem{T}}()
+    rep_dict = Vector{Tuple{Generic.FreeAssAlgElem, Generic.FreeAssAlgElem{T}}}()
     s = length(g)
     @label first
     i = 1
@@ -92,8 +101,12 @@ function normal_form_with_rep(
 
     if ok && !iszero(f)
         qi = divexact(f.coeffs[1], g[i].coeffs[1])
-        f = Generic._sub_rest(f, Generic.mul_term(qi, ml, g[i], mr), 1) # enforce lt cancelation
-        rep_dict[g[i]] = Generic.mul_term(qi, ml, g[i], mr)
+        new_f = Generic._sub_rest(f, Generic.mul_term(qi, ml, g[i], mr), 1) # enforce lt cancelation
+
+        push!(rep_dict, (g[i], f-new_f))
+        println("new_f: $new_f")
+        
+        f = new_f
         #Check if the leading monomial has been killed
         
         @goto first
@@ -174,4 +187,71 @@ function get_obstruction_pairs(g_old::Vector{Generic.FreeAssAlgElem{T}}) where T
     end
     return ans
 end
+
+
+"""
+    getQuantumRelationsByType(n::Int)
+
+Compute the quantum relations of a quantum permutation group of degree `n` by type.
+
+```julia
+using Oscar
+cs, rs, id, wel, inj = getQuantumRelationsByType(4)
+
+```
+"""
+function getQuantumRelationsByType(n::Int)
+    relat , relat_by_type, u, _ = getQuantumPermutationGroup(n);
+    cs = typeof(relat[1])[]
+    for ele in relat_by_type[:col_sum]
+        push!(cs, ele)
+    end
+    rs = typeof(relat[1])[]
+    for ele in relat_by_type[:row_sum]
+        push!(rs, ele)
+    end
+    id = permutedims(reshape(relat_by_type[:idempotent],(size(u)[1],size(u)[2])),[2,1])
+
+    #Define wels to be vector of even index entries of relat_by_type[:zero_divisor] inj
+    wels = typeof(relat[1])[]
+    inj = typeof(relat[1])[]
+    for i in 1:1:length(relat_by_type[:zero_divisor])
+        if i % 2 == 0
+            push!(wels,relat_by_type[:zero_divisor][i])
+        else
+            push!(inj,relat_by_type[:zero_divisor][i])
+        end
+    end
+    reshaped_wels = Array{typeof(relat[1]),3}(undef, (size(u)[1],size(u)[1],size(u)[2]))
+
+    sk = div(length(wels),n)
+    for h in 0:length(wels)-1
+        j = div(h,sk)+1
+        h1 = rem(h,sk)+1
+        i = div(h1-1,n-1) +1
+        k = rem(h1-1,n-1) +1
+        if k >= i
+            k += 1
+        end
+        reshaped_wels[i,j,k] = wels[h+1]
+    end
+
+    reshaped_inj = Array{typeof(relat[1]),3}(undef, (size(u)[1],size(u)[1],size(u)[2]))
+
+    sk = div(length(inj),n)
+    for h in 0:length(inj)-1
+        j = div(h,sk)+1
+        h1 = rem(h,sk)+1
+        i = div(h1-1,n-1) +1
+        k = rem(h1-1,n-1) +1
+        if k >= i
+            k += 1
+        end
+        reshaped_inj[j,i,k] = inj[h+1]
+    end
+    return cs, rs, id, reshaped_inj, reshaped_wels
+end
+
+
+
 
