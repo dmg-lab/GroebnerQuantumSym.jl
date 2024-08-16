@@ -34,7 +34,10 @@ function normal_form_noRedTail(
     @label first
     i = 1
     @label again 
-    iszero(f) && return f 
+    if iszero(f)
+      println(otp)
+      return f 
+    end
     ok, ml, mr = Generic.word_divides_leftmost(f.exps[1], g[i].exps[1])
     if !ok && i < s
         i += 1
@@ -44,8 +47,21 @@ function normal_form_noRedTail(
     if ok && !iszero(f)
         qi = divexact(f.coeffs[1], g[i].coeffs[1])
         f = Generic._sub_rest(f, Generic.mul_term(qi, ml, g[i], mr), 1) # enforce lt cancelation
-        otp *= "Reducing f by "*string(qi)*"*"*string(g[i])*"\n"
-        otp *= "new f = "*string(f)*"\n"
+
+        #Printing buisiness
+        A = parent(f)
+        mul_l = one(A)
+        mul_r = one(A)
+        if length(ml) > 0
+            mul_l = prod([A[i] for i in ml])
+        elseif length(mr) > 0
+            mul_r = prod([A[i] for i in mr])
+        end
+        otp *= "q: "*string(qi)*"\n"
+        otp *= "ml: "*string(mul_l)*"\n"
+        otp *= "mr: "*string(mul_r)*"\n"
+        otp *= "g = "*string(g[i])*"\n"
+        otp *= "new_f = qi * ml * g[i] * mr = "*string(lm(f))*" * ...\n"
         otp *="-"^50 * "\n"
 
         #Check if the leading monomial has been killed
@@ -104,7 +120,10 @@ function normal_form_with_rep(
         new_f = Generic._sub_rest(f, Generic.mul_term(qi, ml, g[i], mr), 1) # enforce lt cancelation
 
         push!(rep_dict, (g[i], f-new_f))
-        println("new_f: $new_f")
+        println("-"^50)
+        println("Reducing f by Polynomial with leading term: $(lm(g[i]))")
+        println("New leading monomial: $(lm(new_f))")
+        println("div by: $(f-new_f)")
         
         f = new_f
         #Check if the leading monomial has been killed
@@ -253,5 +272,11 @@ function getQuantumRelationsByType(n::Int)
 end
 
 
+function lm(poly::FreeAssAlgElem)
+  A = parent(poly)
+  length(poly.exps) == 0 && return zero(A)
+  lm_exp = poly.exps[1]
+  return prod([A[i] for i in lm_exp])
+end
 
 

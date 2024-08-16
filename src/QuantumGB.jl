@@ -10,10 +10,13 @@ export
     normal_form_with_rep,
     interreduce!_noRedTail,
     get_obstruction_pairs,
-    getQuantumRelationsByType
+    getQuantumRelationsByType,
+    lm,
+    GeneratingSet
 
 
 include("gbsteps.jl")
+include("GeneratingSet.jl")
 #include("pointed_Bases.jl")
 
 
