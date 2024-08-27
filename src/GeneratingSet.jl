@@ -69,6 +69,44 @@ function add(g::GeneratingSet, x::Generic.FreeAssAlgElem, str::String)
   push!(g.generators,x)
 end
 
+mutable struct ReductionAutomata
+  genset::GeneratingSet
+  states::Vector{Generic.FreeAssAlgElem}
+  finished::Bool
+end
+
+function reduction_automata(g::GeneratingSet, f::Generic.FreeAssAlgElem)
+  ReductionAutomata(g,[f],false)
+end
+
+finish!(r::ReductionAutomata) = r.finished = true
+is_finished(r::ReductionAutomata) = r.finished
+
+function next!(R::ReductionAutomata)
+  @assert !is_finished(R) "Automata is finished"
+  curr_f = R.states[end]
+  iszero(curr_f) && finish!(R) && return 
+
+  genset = R.genset
+   
+  s = length(genset)
+    @label first
+    i = 1
+    @label again 
+    if iszero(f)
+      println(otp)
+      return f 
+    end
+    ok, ml, mr = Generic.word_divides_leftmost(f.exps[1], g[i].exps[1])
+    if !ok && i < s
+        i += 1
+        @goto again
+    end
+
+
+end
+
+
 
 
 

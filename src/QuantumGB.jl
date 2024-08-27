@@ -17,6 +17,7 @@ export
 
 include("gbsteps.jl")
 include("GeneratingSet.jl")
+include("symmetric_group_gb.jl")
 #include("pointed_Bases.jl")
 
 

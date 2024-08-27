@@ -1,3 +1,4 @@
+using Base: GenericIOBuffer
 using Oscar: interreduce
 #Example: The Quantum Permutation Group on 4 Elements
 
@@ -38,15 +39,6 @@ println.(relat)
 interreduce!_noRedTail(relat)
 
 
-function rwel(k,j,n::Int=4,h=2,v=2)
-  _, _, u, _ = getQuantumPermutationGroup(n) 
-  return sum([u[2,k]*u[s,j] for s in h+1:n]) - sum([u[s,k]*u[1,j] for s in v+1:n]) + u[1,j] - u[2,k]
-end
-
-function rinj(k,j,n::Int=4,h=2,v=2)
-  _, _, u, _ = getQuantumPermutationGroup(n) 
-  return sum([u[k,2]*u[j,s] for s in h+1:n]) - sum([u[k,s]*u[j,1] for s in v+1:n]) + u[j,1] - u[k,2]
-end
 
 
 n = 4
@@ -72,10 +64,37 @@ bg1 = filter(x-> lm(x) ==u[2,2]*u[3,3],rwels)[1]
 
 gens = vcat(ip_f,rs,cs,wels,inj,rwels_min,rinjs)
 
-normal_form_noRedTail(u[2,3]*rs[2],gens)
+normal_form_noRedTail(bg1,gens)
+
+
+
+gb1 = groebner_basis(gens)
+
+Oscar.AbstractAlgebra.interreduce!(gb1)
+
+gb2 = groebner_basis(rel)
+
+Oscar.AbstractAlgebra.interreduce!(gb2)
+
+gb2[end] in gb1
+
+map(x -> x in gb2,gb1)
+map(y -> y in gb1, gb2)
+
+sum(normal_form.(gb1,Ref(gb2)))
+sum(normal_form.(gb2,Ref(gb1)))
+
+normal_form(bg1,gens)
+
+lm.(gb1)
+s_polys = [ u[i,2] * rinj(k,j) - u[i,2] * u[k,2] * u[j,3] for i in 2:n, k in 2:n, j in 2:n if i != k && k!=j]
+
+    normal_form.(s_polys,Ref(gens))
+
+lm.(normal_form.(s_polys,Ref(gens)))
+
 
 _, dct = normal_form_with_rep(bg1,gens)
-dct
 
 rinjs
 rwels_min
