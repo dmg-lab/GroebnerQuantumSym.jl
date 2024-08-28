@@ -1,5 +1,5 @@
 using Base: GenericIOBuffer
-using Oscar: interreduce
+using Oscar: leading_monomial
 #Example: The Quantum Permutation Group on 4 Elements
 
 #= To get this to run
@@ -48,7 +48,7 @@ cs = relat_by_type[:col_sum]
 rs = relat_by_type[:row_sum][2:end]
 
 ip = relat_by_type[:idempotent]
-nonip = filter(x->lm(x) in vcat([u[1,j]^2 for j in 1:n],[u[i,1]^2 for i in 1:n]),ip)
+nonip = filter(x->leading_monomial(x) in vcat([u[1,j]^2 for j in 1:n],[u[i,1]^2 for i in 1:n]),ip)
 ip_f = filter(x->!(x in nonip),ip)
 
 wels = [u[i,j]*u[i,k] for i in 2:n, j in 2:n, k in 2:n if j != k]
