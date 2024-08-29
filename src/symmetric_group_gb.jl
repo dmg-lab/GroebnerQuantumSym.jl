@@ -5,6 +5,7 @@ export rwel,
   magic_unitary,
   inj,
   wel,
+  ip, 
   normed,
   g0,
   indexed_name,
@@ -74,6 +75,11 @@ end
 function inj(i::Int, j::Int, k::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
   @assert 1 <= i <= size(u)[1] && 1 <= j <= size(u)[2] && 1 <= k <= size(u)[1] "Indices out of bounds"
   return u[i, j] * u[k, j]
+end
+
+function ip(i::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  @assert 1 <= i <= size(u)[1] && 1 <= j <= size(u)[2] "Indices out of bounds"
+  return u[i, j] * u[i, j] - u[i, j]
 end
 
 
