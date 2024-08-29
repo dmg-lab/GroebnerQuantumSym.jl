@@ -249,6 +249,58 @@ max_degree(gb!)
 
 =#
 
+function bg1(i::Int, j::Int, k::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return inj(i,2,k)*u[j, 3] -  u[i, 2]*rinj(k,j)
+end
 
+function bg2(i::Int, j::Int, k::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return u[k,2]*inj(j,3,i) -  rinj(k,j)*u[i,3]
+end
 
+function bg3(k::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return ip(2,k)*u[3,j] -  u[2,k]*rwel(k,j)
+end
 
+function bg4(k::Int; j::Int, u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return u[2,k]*ip(3,j) -  rwel(k,j)*u[3,j]
+end
+
+function bg5(k::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return ip(k,2)*u[j,3] -  u[k,2]*rinj(k,j)
+end
+
+function bg6(k::Int; j::Int, u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return u[k,2]*ip(k,2) -  rinj(k,j)*u[j,3]
+end
+
+function bg7(j::Int, k::Int, h::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return wel(2,j,k)*u[3, h] -  u[2, j]*rwel(k,h)
+end
+
+function bg8(k::Int, j::Int, h::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return u[2,k]*wel(3,j,h) -  rwel(k,j)*u[3,h]
+end
+
+function bg9(k::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return rinj(k,2)*u[3,j] -  u[k,2]*rwel(3,j)
+end
+
+function bg10(j::Int; k::Int, u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return u[2,j]*rinj(3,k) -  rwel(j,2)*u[k,3]
+end
+
+function bg11(k::Int, i::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return inj(k,i,2)*u[3,j] -  u[k,i]*rwel(i,j)
+end
+
+function bg12(k::Int, j::Int, h::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return u[2,k]*inj(3,i,j) -  rwel(k,i)*u[j,i]
+end
+
+function bg13(i::Int, j::Int, k::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return wel(i,j,2)*u[k, 3] -  u[i,j]*rinj(i,k)
+end
+
+function bg14(k::Int, i::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+  return u[k,2]*wel(i,3,j) -  rinj(k,i)*u[i,j]
+end
