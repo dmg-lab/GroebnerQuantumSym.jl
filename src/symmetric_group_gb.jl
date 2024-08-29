@@ -281,7 +281,7 @@ function bg3(k::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary(
   return ip(2,k,u=u)*u[3,j] -  u[2,k]*rwel(k,j,u=u)
 end
 
-function bg4(k::Int; j::Int, u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+function bg4(k::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
   return u[2,k]*ip(3,j,u=u) -  rwel(k,j,u=u)*u[3,j]
 end
 
@@ -289,7 +289,7 @@ function bg5(k::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary(
   return ip(k,2,u=u)*u[j,3] -  u[k,2]*rinj(k,j,u=u)
 end
 
-function bg6(k::Int; j::Int, u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+function bg6(k::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
   return u[k,2]*ip(k,2,u=u) -  rinj(k,j,u=u)*u[j,3]
 end
 
@@ -305,7 +305,7 @@ function bg9(k::Int, j::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary(
   return rinj(k,2,u=u)*u[3,j] -  u[k,2]*rwel(3,j,u=u)
 end
 
-function bg10(j::Int; k::Int, u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
+function bg10(j::Int, k::Int; u::Matrix{Generic.FreeAssAlgElem{T}}=magic_unitary()) where T
   return u[2,j]*rinj(3,k,u=u) -  rwel(j,2,u=u)*u[k,3]
 end
 

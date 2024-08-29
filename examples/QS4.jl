@@ -57,6 +57,21 @@ injs = [u[i,j]*u[k,j] for i in 2:n, j in 2:n, k in 2:n if i != k]
 rwels = reshape([rwel(k,j,n) for j in 2:n, k in 2:n if j!=k],(n-1)*(n-2))
 rinjs = reshape([rinj(k,j,n) for j in 2:n, k in 2:n if j!=k],(n-1)*(n-2))
 
+bg1s = [bg1(i,j,k,u=u) for i in 2:n, j in 2:n, k in 2:n if (k!=i && k!=j)]
+bg2s = [bg2(i,j,k,u=u) for i in 2:n, j in 2:n, k in 2:n if (j!=i && k!=j)]
+bg3s = [bg3(k,j,u=u) for k in 2:n, j in 2:n if j!=k]
+bg4s = [bg4(k,j,u=u) for k in 2:n, j in 2:n if k!=j]
+bg5s = [bg5(k,j,u=u) for k in 2:n, j in 2:n if k!=j]
+bg6s = [bg6(k,j,u=u) for k in 2:n, j in 2:n if k!=j]
+bg7s = [bg7(j,k,h,u=u) for j in 2:n, k in 3:n, h in 2:n if k!=h]
+bg8s = [bg8(k,j,h,u=u) for k in 2:n, j in 2:n, h in 2:n if (k!=j && h!=3)]
+bg9s = [bg9(k,j,u=u) for k in 3:n, j in 2:n if 3!=j]    # 16
+bg10s = [bg10(j,k,u=u) for j in 3:n, k in 2:n if 3!=k]  # 16
+bg11s = [bg11(k,i,j,u=u) for k in 3:n, i in 2:n, j in 2:n if i!=j]
+bg12s = [bg12(k,j,h,u=u) for k in 2:n, j in 2:n, h in 2:n if (3!=j && k!=j)]
+bg13s = [bg13(i,j,k,u=u) for i in 3:n, j in 2:n, k in 2:n if i!=k]
+bg14s = [bg14(k,i,j,u=u) for k in 2:n, i in 2:n, j in 2:n if (i!=j && k!=i)]
+
 #filter out shit
 rwels_min = filter(x->lm(x) != u[2,2]*u[3,3],rwels)
 
