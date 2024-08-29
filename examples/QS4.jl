@@ -52,7 +52,7 @@ nonip = filter(x->leading_monomial(x) in vcat([u[1,j]^2 for j in 1:n],[u[i,1]^2 
 ip_f = filter(x->!(x in nonip),ip)
 
 wels = [u[i,j]*u[i,k] for i in 2:n, j in 2:n, k in 2:n if j != k]
-inj = [u[i,j]*u[k,j] for i in 2:n, j in 2:n, k in 2:n if i != k]
+injs = [u[i,j]*u[k,j] for i in 2:n, j in 2:n, k in 2:n if i != k]
 
 rwels = reshape([rwel(k,j,n) for j in 2:n, k in 2:n if j!=k],(n-1)*(n-2))
 rinjs = reshape([rinj(k,j,n) for j in 2:n, k in 2:n if j!=k],(n-1)*(n-2))
