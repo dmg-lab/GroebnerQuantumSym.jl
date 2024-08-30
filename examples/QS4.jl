@@ -1,5 +1,4 @@
-using Base: GenericIOBuffer
-using Oscar: leading_monomial
+
 #Example: The Quantum Permutation Group on 4 Elements
 
 #= To get this to run
@@ -12,7 +11,7 @@ Pkg.add("https://github.com/dmg-lab/QuantumAutomorphismGroups.jl.git")
 =#
 
 
-
+using Revise	
 using Oscar
 using QuantumAutomorphismGroups
 using QuantumGB
@@ -71,6 +70,21 @@ bg11s = [bg11(k,i,j,u=u) for k in 3:n, i in 2:n, j in 2:n if i!=j]
 bg12s = [bg12(k,j,h,u=u) for k in 2:n, j in 2:n, h in 2:n if (3!=j && k!=j)]
 bg13s = [bg13(i,j,k,u=u) for i in 3:n, j in 2:n, k in 2:n if i!=k]
 bg14s = [bg14(k,i,j,u=u) for k in 2:n, i in 2:n, j in 2:n if (i!=j && k!=i)]
+
+bg1s_rG0 = [normal_form_noRedTail(f,G0) for f in bg1s]
+bg2s_rG0 = [normal_form_noRedTail(f,G0) for f in bg2s]
+bg3s_rG0 = [normal_form_noRedTail(f,G0) for f in bg3s]
+bg4s_rG0 = [normal_form_noRedTail(f,G0) for f in bg4s]
+bg5s_rG0 = [normal_form_noRedTail(f,G0) for f in bg5s]
+bg6s_rG0 = [normal_form_noRedTail(f,G0) for f in bg6s]
+bg7s_rG0 = [normal_form_noRedTail(f,G0) for f in bg7s]
+bg8s_rG0 = [normal_form_noRedTail(f,G0) for f in bg8s]
+bg9s_rG0 = [normal_form_noRedTail(f,G0) for f in bg9s]
+bg10s_rG0 = [normal_form_noRedTail(f,G0) for f in bg10s]
+bg11s_rG0 = [normal_form_noRedTail(f,G0) for f in bg11s]
+bg12s_rG0 = [normal_form_noRedTail(f,G0) for f in bg12s]
+bg13s_rG0 = [normal_form_noRedTail(f,G0) for f in bg13s]
+bg14s_rG0 = [normal_form_noRedTail(f,G0) for f in bg14s]
 
 #filter out shit
 rwels_min = filter(x->lm(x) != u[2,2]*u[3,3],rwels)

@@ -68,7 +68,7 @@ function normal_form_noRedTail(
     @goto first
   else
     otp *= "="^4 * "End of Normal Form without Tail Reduction" * "="^5 * "\n"
-    println(otp)
+    #println(otp)
     return f
   end
 end
