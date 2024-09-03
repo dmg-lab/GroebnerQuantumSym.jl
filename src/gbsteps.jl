@@ -4,7 +4,7 @@ using Oscar.AbstractAlgebra.Generic
 
 
 """
-    normal_form_noRedTail(f::Generic.FreeAssAlgElem{T}, g::Vector{Generic.FreeAssAlgElem{T}}) where T<:FieldElement
+    normal_form_noRedTail(f::Generic.FreeAssociativeAlgebraElem{T}, g::Vector{Generic.FreeAssociativeAlgebraElem{T}}) where T<:FieldElement
 
 Compute the normal form of `f` with respect to the leading term of the elements of `g`. Without tail reduction.
 
@@ -23,8 +23,8 @@ normal_form_noRedTail(f, g)
 
 """
 function normal_form_noRedTail(
-  f::Generic.FreeAssAlgElem{T},
-  g::Vector{Generic.FreeAssAlgElem{T}},
+  f::Generic.FreeAssociativeAlgebraElem{T},
+  g::Vector{Generic.FreeAssociativeAlgebraElem{T}},
 ) where {T<:FieldElement}
   otp = "="^8 * "Normal Form without Tail Reduction" * "="^8 * "\n"
   otp *= "f = " * string(f) * "\n"
@@ -74,7 +74,7 @@ function normal_form_noRedTail(
 end
 
 """
-    normal_form_with_rep(f::Generic.FreeAssAlgElem{T}, g::Vector{Generic.FreeAssAlgElem{T}}) where T<:FieldElement
+    normal_form_with_rep(f::Generic.FreeAssociativeAlgebraElem{T}, g::Vector{Generic.FreeAssociativeAlgebraElem{T}}) where T<:FieldElement
 
 Compute the normal form of `f` with respect to the leading term of the elements of `g`. Without tail reduction. 
 It stores the reduction steps in a dictionary.
@@ -88,7 +88,7 @@ g = [x^2, y^2, x*y];
 zr,  dct = normal_form_with_rep(f, g);
 # output
 
-Dict{AbstractAlgebra.Generic.FreeAssAlgElem, AbstractAlgebra.Generic.FreeAssAlgElem{QQFi
+Dict{AbstractAlgebra.Generic.FreeAssociativeAlgebraElem, AbstractAlgebra.Generic.FreeAssociativeAlgebraElem{QQFi
 eldElem}} with 2 entries:
   x^2 => 2*x^2
   y^2 => 4*y^2
@@ -96,12 +96,12 @@ eldElem}} with 2 entries:
 
 """
 function normal_form_with_rep(
-  f::Generic.FreeAssAlgElem{T},
-  g::Vector{Generic.FreeAssAlgElem{T}},
+  f::Generic.FreeAssociativeAlgebraElem{T},
+  g::Vector{Generic.FreeAssociativeAlgebraElem{T}},
 ) where {T}
 
   A = parent(f)
-  reps = Tuple{elem_type(base_ring(A)),Generic.FreeAssAlgElem{T},Generic.FreeAssAlgElem{T},Generic.FreeAssAlgElem{T}}[]
+  reps = Tuple{elem_type(base_ring(A)),Generic.FreeAssociativeAlgebraElem{T},Generic.FreeAssociativeAlgebraElem{T},Generic.FreeAssociativeAlgebraElem{T}}[]
   s = length(g)
   @label first
   i = 1
@@ -137,7 +137,7 @@ function normal_form_with_rep(
 end
 
 """
-    interreduce!_noRedTail(g::Vector{Generic.FreeAssAlgElem{T}}) where T
+    interreduce!_noRedTail(g::Vector{Generic.FreeAssociativeAlgebraElem{T}}) where T
 
 Interreduce a list of elements without tail reduction.
 
@@ -155,7 +155,7 @@ length(red_relat)
 ```
 
 """
-function interreduce!_noRedTail(g::Vector{Generic.FreeAssAlgElem{T}}) where {T<:FieldElement}
+function interreduce!_noRedTail(g::Vector{Generic.FreeAssociativeAlgebraElem{T}}) where {T<:FieldElement}
   i = 1
   while length(g) > 1 && length(g) >= i
     r = normal_form_noRedTail(g[i], g[1:end.!=i])
@@ -172,7 +172,7 @@ function interreduce!_noRedTail(g::Vector{Generic.FreeAssAlgElem{T}}) where {T<:
 end
 
 """
-    get_obstruction_pairs(g_old = Vector{Generic.FreeAssAlgElem{T}}) where T<:FieldElement
+    get_obstruction_pairs(g_old = Vector{Generic.FreeAssociativeAlgebraElem{T}}) where T<:FieldElement
 
 Compute the obstruction pairs of a list of elements.
 
@@ -190,7 +190,7 @@ u[4,2]*u[3,3] + u[4,2]*u[3,4] + u[4,3]*u[3,2] + u[4,3]*u[3,3] + u[4,3]*u[3,4] + 
 ```
 
 """
-function get_obstruction_pairs(g_old::Vector{Generic.FreeAssAlgElem{T}}) where {T<:FieldElement}
+function get_obstruction_pairs(g_old::Vector{Generic.FreeAssociativeAlgebraElem{T}}) where {T<:FieldElement}
   g = copy(g_old)
   # step 1 from Thm. 5.2.12 Noncommutative Groebner Bases and Applications, Xingqiang Xiu
   obstruction_queue = Generic.get_obstructions(g)
@@ -274,7 +274,7 @@ function getQuantumRelationsByType(n::Int)
 end
 
 
-function lm(poly::FreeAssAlgElem)
+function lm(poly::FreeAssociativeAlgebraElem)
   return Oscar.leading_monomial(poly)
 end
 

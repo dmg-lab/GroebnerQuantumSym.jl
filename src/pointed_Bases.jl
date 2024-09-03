@@ -17,8 +17,8 @@ export
 mutable struct PointedSet
     point::Int
     base::Vector{Int}
-    rep::Generic.FreeAssAlgElem{T} where T<:FieldElem
-    function PointedSet(point::Int,base::Vector{Int}, rep::Generic.FreeAssAlgElem{T}) where T<:FieldElem
+    rep::Generic.FreeAssociativeAlgebraElem{T} where T<:FieldElem
+    function PointedSet(point::Int,base::Vector{Int}, rep::Generic.FreeAssociativeAlgebraElem{T}) where T<:FieldElem
         @assert point in base
         new(point,base,rep)
     end

@@ -1,7 +1,6 @@
 module QuantumGB
 
 using Oscar;
-using QuantumAutomorphismGroups;
 
 greet() = print("Hello World!")
 
@@ -15,6 +14,7 @@ export
     GeneratingSet
 
 
+include("ReductionAutomata.jl")
 include("gbsteps.jl")
 include("symmetric_group_gb.jl")
 include("interactive_reduce.jl")

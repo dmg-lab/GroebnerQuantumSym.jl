@@ -16,7 +16,7 @@ zr,  dct = normal_form_with_rep(f, g);
 reps_vector_to_poly(dct)
 # output
 
-Dict{AbstractAlgebra.Generic.FreeAssAlgElem, AbstractAlgebra.Generic.FreeAssAlgElem{QQFi
+Dict{AbstractAlgebra.Generic.FreeAssociativeAlgebraElem, AbstractAlgebra.Generic.FreeAssociativeAlgebraElem{QQFi
 eldElem}} with 2 entries:
   x^2 => 2*x^2
   y^2 => 4*y^2
@@ -44,14 +44,14 @@ zr,  dct = normal_form_with_rep(f, g);
 reps_vector_to_poly(dct, names)
 # output
 
-Dict{AbstractAlgebra.Generic.FreeAssAlgElem, AbstractAlgebra.Generic.FreeAssAlgElem{QQFi
+Dict{AbstractAlgebra.Generic.FreeAssociativeAlgebraElem, AbstractAlgebra.Generic.FreeAssociativeAlgebraElem{QQFi
 eldElem}} with 2 entries:
   x^2 => 2*x^2
   y^2 => 4*y^2
 ```
 
 """
-function reps_vector_to_poly(v::Vector, names::Dict{<:Generic.FreeAssAlgElem,String})
+function reps_vector_to_poly(v::Vector, names::Dict{<:Generic.FreeAssociativeAlgebraElem,String})
   v3 = [x[3] for x in v]
   @assert all([x in keys(names) for x in v3])
   length(v) == 0 && return 0
@@ -97,6 +97,44 @@ x1 = reps_vector_to_poly(v,names);
 length(x1)
 print(x1)
 
+
+
+n = 4
+G0, names = g0(n,names=true);
+gb1 = groebner_basis(G0)
+for x in gb1
+open("../examples/gb4.txt", "a") do io
+    println(io, x)
+end
+end
+
+
+
+u = magic_unitary(G0);
+
+
+
+using Oscar
+n = 4
+G0, names = g0(n,names=true);
+gb1 = groebner_basis(G0)
+u = magic_unitary(G0)
+
+filter(x -> x != 0, red_bgs)
+
+
+[x in gb1 for x in bg1s]
+
+
+r, v = normal_form_with_rep(bg1s[1],G0)
+v
+r != 0 && error("r != 0")
+x = reps_vector_to_poly(v,names)
+r
+length(x)
+print(x)
+
+# For multiple n,
 using Oscar
 for n in 11:25
   #Check if already in the file
