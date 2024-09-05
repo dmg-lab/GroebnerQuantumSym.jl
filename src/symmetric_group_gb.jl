@@ -22,7 +22,8 @@ export rwel,
   rwel_col_sum,
   bg,
   bgs,
-  red_bgs
+  g0_count,
+  gb_count
 
 function _index_number(i::Int)
   dgs = reverse(digits(i))
@@ -110,42 +111,12 @@ row_sum(i::Int, u::Matrix{Generic.FreeAssociativeAlgebraElem{T}} where T<:FieldE
 col_sum(i::Int, u::Matrix{Generic.FreeAssociativeAlgebraElem{T}} where T<:FieldElem =magic_unitary()) = sum([u[x, i] for x in 1:size(u)[1]]) - one(parent(u[1, 1]))
 
 function g0(n::Int=4; names=false)
-  u = magic_unitary(n)
-
-  cs = [col_sum(i, u) for i in 1:n]
-  cs_names = indexed_name("cs", 1:length(cs))
-  rs = [row_sum(i, u) for i in 2:n]
-  rs_names = indexed_name("rs", 2:length(cs))
-
-  #Idempotent relations but not the ones that contain i,j = 1
-  ip = reshape([u[i, j]^2 - u[i, j] for i in 2:n, j in 2:n], (n - 1)^2)
-  ip_names = indexed_name("ip", reshape([parse(Int, "$i$j") for i in 2:n, j in 2:n], (n - 1)^2))
-  wels = [u[i, j] * u[i, k] for i in 2:n, j in 2:n, k in 2:n if j != k]
-  wels_names = indexed_name("wel", [parse(Int, "$i$j$k") for i in 2:n, j in 2:n, k in 2:n if j != k])
-  inj = [u[i, j] * u[k, j] for i in 2:n, j in 2:n, k in 2:n if i != k]
-  inj_names = indexed_name("inj", [parse(Int, "$i$j$k") for i in 2:n, j in 2:n, k in 2:n if i != k])
-  rwels = reshape([rwel(k, j; u=u) for j in 2:n, k in 2:n if j != k], (n - 1) * (n - 2))
-  rwels_names = indexed_name("rwel", reshape([parse(Int, "$j$k") for j in 2:n, k in 2:n if j != k], (n - 1) * (n - 2)))
-  rinjs = reshape([rinj(k, j; u=u) for j in 2:n, k in 2:n if j != k], (n - 1) * (n - 2))
-  rinjs_names = indexed_name("rinj", reshape([parse(Int, "$j$k") for j in 2:n, k in 2:n if j != k], (n - 1) * (n - 2)))
-  filter!(x -> x != "rwel₂₃", rwels_names)
-  #filter out shit
-  rwels_min = filter(x -> lm(x) != u[2, 2] * u[3, 3], rwels)
-
-  gens = vcat(ip, rs, cs, wels, inj, rwels_min, rinjs)
-  gens_names = vcat(ip_names, rs_names, cs_names, wels_names, inj_names, rwels_names, rinjs_names)
-
+  ng = g0_named(n)
   if names
-    @assert length(gens) > 0
-    @assert length(gens) == length(gens_names)
-    names_dct = Dict{typeof(gens[1]),String}()
-    for i in eachindex(gens)
-      names_dct[gens[i]] = gens_names[i]
-    end
-    return gens, names_dct
+    return generators(ng), ng.names
+  else
+    return generators(ng)
   end
-
-  return gens
 end
 
 function to_dict(v1::Vector{T}, v2::Vector{H}) where {T,H}
@@ -182,7 +153,6 @@ end
 function g0_named(n::Int=4)
   u = magic_unitary(n)
 
-
   cs = [col_sum(i, u) for i in 1:n]
   cs_names = indexed_name("cs", 1:n)
   cs_ids = [Symbol("cs$i") for i in 1:n]
@@ -191,7 +161,6 @@ function g0_named(n::Int=4)
   rs = [row_sum(i, u) for i in 2:n]
   rs_names = indexed_name("rs", 2:n)
   rs_ids = [Symbol("rs$i") for i in 2:n]
-
   add!(ng, rs, rs_names, rs_ids)
 
   #Idempotent relations but not the ones that contain i,j = 1
@@ -201,7 +170,7 @@ function g0_named(n::Int=4)
   add!(ng, ips, ip_names, ip_ids)
 
   wels = [wel(i,j,k;u=u) for i in 2:n for j in 2:n for k in 2:n if j != k]
-  wels_names = indexed_name("wel", [parse(Int, "$i$j$k") for i in 2:n, j in 2:n, k in 2:n if j != k])
+  wels_names = indexed_name("wel", [parse(Int, "$i$j$k") for i in 2:n for j in 2:n for k in 2:n if j != k])
   wels_ids = [Symbol("wel$i$j$k") for i in 2:n for j in 2:n for k in 2:n if j != k]
   add!(ng, wels, wels_names, wels_ids)
 
@@ -210,14 +179,14 @@ function g0_named(n::Int=4)
   inj_ids = [Symbol("inj$i$j$k") for i in 2:n for j in 2:n for k in 2:n if i != k]
   add!(ng, injs, inj_names, inj_ids)
 
-  rwels = [rwel(k, j; u=u) for j in 2:n for k in 2:n if j != k && !(j == 2 && k == 3)]
-  rwels_names = indexed_name("rwel", [parse(Int, "$j$k") for j in 2:n for k in 2:n if j != k && !(j == 2 && k == 3)])
-  rwels_ids = [Symbol("rwel$j$k") for j in 2:n for k in 2:n if j != k && !(j == 2 && k == 3)]
+  rwels = [rwel(k, j; u=u) for j in 2:n for k in 2:n if  k != j &&!(j == 2 && k == 3)]
+  rwels_names = indexed_name("rwel", [parse(Int, "$j$k") for j in 2:n for k in 2:n if k != j && !(j == 2 && k == 3)])
+  rwels_ids = [Symbol("rwel$j$k") for j in 2:n for k in 2:n if k != j && !(j == 2 && k == 3)]
   add!(ng, rwels, rwels_names, rwels_ids)
 
-  rinjs = [rinj(k, j; u=u) for j in 2:n for k in 2:n if j != k]
-  rinjs_names = indexed_name("rinj", [parse(Int, "$j$k") for j in 2:n for k in 2:n if j != k])
-  rinjs_ids = [Symbol("rinj$j$k") for j in 2:n for k in 2:n if j != k]
+  rinjs = [rinj(k, j; u=u) for j in 2:n for k in 2:n if k != j]
+  rinjs_names = indexed_name("rinj", [parse(Int, "$j$k") for j in 2:n for k in 2:n if k != j])
+  rinjs_ids = [Symbol("rinj$j$k") for j in 2:n for k in 2:n if k != j]
   add!(ng, rinjs, rinjs_names, rinjs_ids)
 
   return ng
@@ -430,5 +399,13 @@ function bgs(u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary(); n
 
   names && return bgs, bgs_names
   return bgs
+end
+
+function g0_count(n::Int)
+  return 2n^3 -5n^2 +4n - 1
+end
+
+function gb_count(n::Int)
+  return 2*(n-2)*(n-3)*(n-1) + 2*(n-4)*(n-2)+2*(n-3)+1 + g0_count(n)
 end
 

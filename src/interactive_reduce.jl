@@ -78,7 +78,7 @@ end
 
 #= The Example
 
-n = 8
+n = 4
 G0, names = g0_extended(n,names=true)
 u = magic_unitary(G0)
 bg1 = rwel(2,3; u = u)
@@ -88,20 +88,25 @@ x = reps_vector_to_poly(v,names)
 length(x)
 print(x)
 
-G0, names = g0(n,names=true);
-u = magic_unitary(G0);
-bg1 = rwel(2,3; u = u);
-r, v = normal_form_with_rep(bg1,G0);
-r != 0 && error("r != 0");
-x1 = reps_vector_to_poly(v,names);
-length(x1)
-print(x1)
+n = 8
+G0, names = g0(n,names=true)
+u = magic_unitary(G0)
+bg1 = bg(1,2,3,4; u = u)
+r, v = normal_form_with_rep(bg1,G0)
+r != 0 && error("r != 0")
+x = reps_vector_to_poly(v,names)
+r
+groebner_basis(G0)
+length(x)
+print(x)
 
 
 
 n = 4
 G0, names = g0(n,names=true);
-gb1 = groebner_basis(G0)
+g1 = groebner_basis(G0)
+x = leading_monomial.(b1)
+showall(x)
 for x in gb1
 open("../examples/gb4.txt", "a") do io
     println(io, x)
@@ -115,9 +120,9 @@ u = magic_unitary(G0);
 
 
 using Oscar
-n = 4
+n = 8
 G0, names = g0(n,names=true);
-gb1 = groebner_basis(G0)
+gb1 = groebner_basis(G0,6)
 u = magic_unitary(G0)
 
 filter(x -> x != 0, red_bgs)

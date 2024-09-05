@@ -12,9 +12,8 @@ export ReductionStep,
   delete!,
   add!,
   reduction_automata,
-  generators
-  polynomial,
-  current_state,
+  generators,
+  names
 
 
 """
@@ -264,6 +263,7 @@ function named_generators(
 end
 
 generators(ng::NamedGenerators) = ng.gs
+names(ng::NamedGenerators) = ng.names
 
 mutable struct ReductionAutomata
     generator_set::NamedGenerators
@@ -304,9 +304,14 @@ end
 
 Base.show(io::IO, Rs::ReductionAutomata) = print(io, "Reduction Automata with $(length(Rs.steps)) steps over $(length(Rs.generator_set)) generators")
 
+#polynomial(Rs::ReductionAutomata) = Rs.f
+current_state(Rs::ReductionAutomata) = Rs.current
+
 function finish!(Rs::ReductionAutomata)
   error("Not implemented")
 end
 
-polynomial(Rs::ReductionAutomata) = Rs.f
-current_state(Rs::ReductionAutomata) = Rs.current
+function get_divisors(Rs::ReductionAutomata, i::Int=1)
+  error("Not implemented")
+end
+
