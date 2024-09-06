@@ -314,4 +314,3 @@ end
 function get_divisors(Rs::ReductionAutomata, i::Int=1)
   error("Not implemented")
 end
-
