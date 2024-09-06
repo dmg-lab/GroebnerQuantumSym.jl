@@ -120,8 +120,15 @@ u = magic_unitary(G0);
 
 
 using Oscar
-n = 8
+n = 4
 G0, names = g0(n,names=true);
+u = magic_unitary(G0)
+
+rwel(3,2; u = u) in G0
+rwel(2,3; u = u) in G0
+groebner_basis(G0)
+
+rinj(2,3; u = u)
 gb1 = groebner_basis(G0,6)
 u = magic_unitary(G0)
 

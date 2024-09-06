@@ -179,9 +179,9 @@ function g0_named(n::Int=4)
   inj_ids = [Symbol("inj$i$j$k") for i in 2:n for j in 2:n for k in 2:n if i != k]
   add!(ng, injs, inj_names, inj_ids)
 
-  rwels = [rwel(k, j; u=u) for j in 2:n for k in 2:n if  k != j &&!(j == 2 && k == 3)]
-  rwels_names = indexed_name("rwel", [parse(Int, "$j$k") for j in 2:n for k in 2:n if k != j && !(j == 2 && k == 3)])
-  rwels_ids = [Symbol("rwel$j$k") for j in 2:n for k in 2:n if k != j && !(j == 2 && k == 3)]
+  rwels = [rwel(k, j; u=u) for j in 2:n for k in 2:n if  k != j &&!(j == 3 && k == 2)]
+  rwels_names = indexed_name("rwel", [parse(Int, "$k$j") for j in 2:n for k in 2:n if k != j && !(j == 3 && k == 2)])
+  rwels_ids = [Symbol("rwel$k$j") for j in 2:n for k in 2:n if k != j && !(j == 3 && k == 2)]
   add!(ng, rwels, rwels_names, rwels_ids)
 
   rinjs = [rinj(k, j; u=u) for j in 2:n for k in 2:n if k != j]

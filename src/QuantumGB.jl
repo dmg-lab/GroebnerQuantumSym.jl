@@ -18,6 +18,7 @@ include("ReductionAutomata.jl")
 include("gbsteps.jl")
 include("symmetric_group_gb.jl")
 include("interactive_reduce.jl")
+include("the_conjecture.jl")
 #include("pointed_Bases.jl")
 
 
