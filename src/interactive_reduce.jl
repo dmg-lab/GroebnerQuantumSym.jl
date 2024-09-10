@@ -146,24 +146,17 @@ r
 length(x)
 print(x)
 
-# For multiple n,
-using Oscar
-for n in 11:25
-  #Check if already in the file
-  G0, names = g0(n,names=true)
-  u = magic_unitary(G0)
-  bg1 = rwel(2,3; u = u)
-  r, v = normal_form_with_rep(bg1,G0)
-  r != 0 && error("r != 0")
-  x = reps_vector_to_poly(v,names)
-  x = "n = $(n): " * x
-  #print to file, or append to file
-  open("../examples/rwel_23_reductions.txt", "a") do io
-    println(io, x)
-  end
-end
+n = 8
+G1,names = g1(n,true)
+u = magic_unitary(G1)
 
+rw = rwel(2,3; u = u)
+bege1 = bg(1,2,3,4; u = u)
+
+r, v = normal_form_with_rep(bege1,G1)
+r != 0 && error("r != 0")
+x = reps_vector_to_poly(v,names)
 print(x)
-names
+
 
 =#

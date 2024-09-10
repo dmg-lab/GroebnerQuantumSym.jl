@@ -6,7 +6,6 @@ export rwel,
   inj,
   wel,
   ip,
-  normed,
   g0,
   indexed_name,
   row_sum,
@@ -21,9 +20,10 @@ export rwel,
   rinj_col_sum,
   rwel_col_sum,
   bg,
-  bgs,
   g0_count,
-  gb_count
+  gb_count,
+  g1_named,
+  g1
 
 function _index_number(i::Int)
   dgs = reverse(digits(i))
@@ -323,82 +323,26 @@ max_degree(gb!)
 
 =#
 
-bg1(i::Int, j::Int, k::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = inj(i, 2, k, u=u) * u[j, 3] - u[i, 2] * rinj(k, j, u=u)
-bg2(i::Int, j::Int, k::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = u[k, 2] * inj(j, 3, i, u=u) - rinj(k, j, u=u) * u[i, 3]
-bg3(k::Int, j::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = ip(2, k, u=u) * u[3, j] - u[2, k] * rwel(k, j, u=u)
-bg4(k::Int, j::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = u[2, k] * ip(3, j, u=u) - rwel(k, j, u=u) * u[3, j]
-bg5(k::Int, j::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = ip(k, 2, u=u) * u[j, 3] - u[k, 2] * rinj(k, j, u=u)
-bg6(k::Int, j::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = u[k, 2] * ip(k, 2, u=u) - rinj(k, j, u=u) * u[j, 3]
-bg7(j::Int, k::Int, h::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = wel(2, j, k, u=u) * u[3, h] - u[2, j] * rwel(k, h, u=u)
-bg8(k::Int, j::Int, h::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = u[2, k] * wel(3, j, h, u=u) - rwel(k, j, u=u) * u[3, h]
-bg9(k::Int, j::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = rinj(k, 2, u=u) * u[3, j] - u[k, 2] * rwel(3, j, u=u)
-bg10(j::Int, k::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = u[2, j] * rinj(3, k, u=u) - rwel(j, 2, u=u) * u[k, 3]
-bg11(k::Int, i::Int, j::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = inj(k, i, 2, u=u) * u[3, j] - u[k, i] * rwel(i, j, u=u)
-bg12(k::Int, j::Int, i::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = u[2, k] * inj(3, i, j, u=u) - rwel(k, i, u=u) * u[j, i]
-bg13(i::Int, j::Int, k::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = wel(i, j, 2, u=u) * u[k, 3] - u[i, j] * rinj(i, k, u=u)
-bg14(k::Int, i::Int, j::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} = u[k, 2] * wel(i, 3, j, u=u) - rinj(k, i, u=u) * u[i, j]
 
-function bg(z::Int, i::Int, j::Int, k::Union{Int, Missing}=missing; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where T<:FieldElem
-z == 1 && !ismissing(k) && return inj(i, 2, k, u=u) * u[j, 3] - u[i, 2] * rinj(k, j, u=u)
-z == 2 && !ismissing(k) && return u[k, 2] * inj(j, 3, i, u=u) - rinj(k, j, u=u) * u[i, 3]
-z == 3 && ismissing(k) &&  return ip(2, i, u=u) * u[3, j] - u[2, i] * rwel(i, j, u=u)
-z == 4 && ismissing(k) && return u[2, i] * ip(3, j, u=u) - rwel(i, j, u=u) * u[3, j]
-z == 5 && ismissing(k) && return ip(i, 2, u=u) * u[j, 3] - u[i, 2] * rinj(i, j, u=u)
-z == 6 && ismissing(k) && return u[i, 2] * ip(i, 2, u=u) - rinj(i, j, u=u) * u[j, 3]
-z == 7 && !ismissing(k) && return wel(2, i, j, u=u) * u[3, k] - u[2, i] * rwel(j, k, u=u)
-z == 8 && !ismissing(k) && return u[2, i] * wel(3, j, k, u=u) - rwel(i, j, u=u) * u[3, k]
-z == 9 &&  ismissing(k) && return rinj(i, 2, u=u) * u[3, j] - u[i, 2] * rwel(3, j, u=u)
-z == 10 && ismissing(k) && return u[2, i] * rinj(3, j, u=u) - rwel(i, 2, u=u) * u[j, 3]
-z == 11 && !ismissing(k) && return inj(i, k, 2, u=u) * u[3, j] - u[i, k] * rwel(k, j, u=u)
-z == 12 && !ismissing(k) && return u[2, i] * inj(3, k, j, u=u) - rwel(i, k, u=u) * u[j, k]
-z == 13 && !ismissing(k) && return wel(i, j, 2, u=u) * u[k, 3] - u[i, j] * rinj(i, k, u=u)
-z == 14 && !ismissing(k) && return u[i, 2] * wel(i, 3, j, u=u) - rinj(i, k, u=u) * u[k, j]
+function bg(z::Int, k::Int, j::Int, i::Union{Int, Missing}=missing; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where T<:FieldElem
+z == 1 && !ismissing(i) && return inj(k, 2, j, u=u) * u[i, 3] - u[k, 2] * rinj(j, i, u=u) #
+z == 2 && !ismissing(i) && return u[k, 2] * inj(j, 3, i, u=u) - rinj(k, j, u=u) * u[i, 3] #
+z == 3 && ismissing(i) &&  return ip(2, k, u=u) * u[3, j] - u[2, k] * rwel(k, j, u=u) #
+z == 4 && ismissing(i) && return u[2, k] * ip(3, j, u=u) - rwel(k, j, u=u) * u[3, j] #
+z == 5 && ismissing(i) && return ip(k, 2, u=u) * u[j, 3] - u[k, 2] * rinj(k, j, u=u) #
+z == 6 && ismissing(i) && return u[k, 2] * ip(3, j, u=u) - rinj(k, j, u=u) * u[3, j] #
+z == 7 && !ismissing(i) && return wel(2, k, j, u=u) * u[3, i] - u[2, k] * rwel(j, i, u=u)
+z == 8 && !ismissing(i) && return u[2, k] * wel(3, j, i, u=u) - rwel(k, j, u=u) * u[3, i]
+z == 9 &&  ismissing(i) && return rinj(k, 2, u=u) * u[3, j] - u[k, 2] * rwel(3, j, u=u)
+z == 10 && ismissing(i) && return u[2, j] * rinj(3, k, u=u) - rwel(j, 2, u=u) * u[k, 3] #
+z == 11 && !ismissing(i) && return inj(k, j, 2, u=u) * u[3, i] - u[k, j] * rwel(j, i, u=u) #
+z == 12 && !ismissing(i) && return u[2, k] * inj(3, j, i, u=u) - rwel(k, j, u=u) * u[i, j]
+z == 13 && !ismissing(i) && return wel(k, j, 2, u=u) * u[i, 3] - u[k, j] * rinj(k, i, u=u)
+z == 14 && !ismissing(i) && return u[k, 2] * wel(j, 3, i, u=u) - rinj(k, j, u=u) * u[j, i]
 
-ismissing(k) && @warn "k is required for z = 1, 2, 7, 8, 11, 12, 13, 14"
-!ismissing(k) && @warn " k must be missing for z = 3, 4, 5, 6, 9, 10"
+ismissing(i) && @warn "k is required for z = 1, 2, 7, 8, 11, 12, 13, 14"
+!ismissing(i) && @warn " k must be missing for z = 3, 4, 5, 6, 9, 10"
 throw(ArgumentError("You have done something wrong"))
-end
-
-
-
-
-
-function bgs(u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary(); names=false) where {T}
-  n = size(u)[1]
-  bg1s = [bg1(i, j, k, u=u) for i in 2:n, j in 2:n for k in 2:n if (k != i && k != j)]
-  bg1s_names = indexed_name("bg1", [parse(Int, "$i$j$k") for i in 2:n for j in 2:n for k in 2:n if (k != i && k != j)])
-  bg2s = [bg2(i, j, k, u=u) for i in 2:n, j in 2:n for k in 2:n if (j != i && k != j)]
-  bg2s_names = indexed_name("bg2", [parse(Int, "$i$j$k") for i in 2:n for j in 2:n, k in 2:n if (j != i && k != j)])
-  bg3s = [bg3(k, j, u=u) for k in 2:n for j in 2:n if j != k]
-  bg3s_names = indexed_name("bg3", [parse(Int, "$k$j") for k in 2:n for j in 2:n if j != k])
-  bg4s = [bg4(k, j, u=u) for k in 2:n for j in 2:n if k != j]
-  bg4s_names = indexed_name("bg4", [parse(Int, "$k$j") for k in 2:n, j in 2:n if k != j])
-  bg5s = [bg5(k, j, u=u) for k in 2:n for j in 2:n if k != j]
-  bg5s_names = indexed_name("bg5", [parse(Int, "$k$j") for k in 2:n for j in 2:n if k != j])
-  bg6s = [bg6(k, j, u=u) for k in 2:n for j in 2:n if k != j]
-  bg6s_names = indexed_name("bg6", [parse(Int, "$k$j") for k in 2:n for j in 2:n if k != j])
-  bg7s = [bg7(j, k, h, u=u) for j in 2:n, k in 3:n for h in 2:n if k != h]
-  bg7s_names = indexed_name("bg7", [parse(Int, "$j$k$h") for j in 2:n for k in 3:n for h in 2:n if k != h])
-  bg8s = [bg8(k, j, h, u=u) for k in 2:n for j in 2:n for h in 2:n if (k != j && h != 3)]
-  bg8s_names = indexed_name("bg8", [parse(Int, "$k$j$h") for k in 2:n for j in 2:n for h in 2:n if (k != j && h != 3)])
-  bg9s = [bg9(k, j, u=u) for k in 3:n for  j in 2:n if 3 != j]
-  bg9s_names = indexed_name("bg9", [parse(Int, "$k$j") for k in 3:n for j in 2:n if 3 != j])
-  bg10s = [bg10(j, k, u=u) for j in 3:n for k in 2:n if 3 != k]
-  bg10s_names = indexed_name("bg10", [parse(Int, "$j$k") for j in 3:n for k in 2:n if 3 != k])
-  bg11s = [bg11(k, i, j, u=u) for k in 3:n for i in 2:n for j in 2:n if i != j]
-  bg11s_names = indexed_name("bg11", [parse(Int, "$k$i$j") for k in 3:n for i in 2:n for j in 2:n if i != j])
-  bg12s = [bg12(k, j, h, u=u) for k in 2:n for j in 2:n for h in 2:n if (3 != j && k != j)]
-  bg12s_names = indexed_name("bg12", [parse(Int, "$k$j$h") for k in 2:n for j in 2:n for h in 2:n if (3 != j && k != j)])
-  bg13s = [bg13(i, j, k, u=u) for i in 3:n for j in 2:n for k in 2:n if i != k]
-  bg13s_names = indexed_name("bg13", [parse(Int, "$i$j$k") for i in 3:n for j in 2:n for k in 2:n if i != k])
-  bg14s = [bg14(k, i, j, u=u) for k in 2:n for i in 2:n for j in 2:n if (i != j && k != i)]
-  bg14s_names = indexed_name("bg14", [parse(Int, "$k$i$j") for k in 2:n for i in 2:n for j in 2:n if (i != j && k != i)])
-
-  bgs = vcat(bg1s, bg2s, bg3s, bg4s, bg5s, bg6s, bg7s, bg8s, bg9s, bg10s, bg11s, bg12s, bg13s, bg14s)
-  bgs_names = vcat(bg1s_names, bg2s_names, bg3s_names, bg4s_names, bg5s_names, bg6s_names, bg7s_names, bg8s_names, bg9s_names, bg10s_names, bg11s_names, bg12s_names, bg13s_names, bg14s_names)
-
-  names && return bgs, bgs_names
-  return bgs
 end
 
 function g0_count(n::Int)
@@ -408,4 +352,67 @@ end
 function gb_count(n::Int)
   return 2*(n-2)*(n-3)*(n-1) + 2*(n-4)*(n-2)+2*(n-3)+1 + g0_count(n)
 end
+
+function g1_named(n::Int)
+  ng= g0_named(n)  
+  u = magic_unitary(ng)
+
+  e1 = [bg(2,k,j,i;u=u) for k=3:n for j=3:n for i=2:n if i!=j && j!=k]
+  e1_names = indexed_name("bg2_", [parse(Int, "$k$j$i") for k=3:n for j=3:n for i=2:n if i!=j && j!=k])
+  e1_ids = [Symbol("bg2_$k$j$i") for k=3:n for j=3:n for i=2:n if i!=j && j!=k]
+  add!(ng, e1, e1_names, e1_ids)
+
+  e1_s = [bg(8,k,j,i;u=u) for k=3:n for j=3:n for i=2:n if i!=j && j!=k]
+  e1_s_names = indexed_name("bg8_", [parse(Int, "$k$j$i") for k=3:n for j=3:n for i=2:n if i!=j && j!=k])
+  e1_s_ids = [Symbol("bg8_$k$j$i") for k=3:n for j=3:n for i=2:n if i!=j && j!=k] 
+  add!(ng, e1_s, e1_s_names, e1_s_ids)
+  
+  e2 = [bg(2,k,2,i;u=u) for k=3:n for i=4:n]
+  e2_names = indexed_name("bg2_", [parse(Int, "$k$i") for k=3:n for i=4:n])
+  e2_ids = [Symbol("bg2_$k$i") for k=3:n for i=4:n]
+  add!(ng, e2, e2_names, e2_ids)
+
+  e2_s = [bg(8,k,2,i;u=u) for k=3:n for i=4:n]
+  e2_s_names = indexed_name("bg8_", [parse(Int, "$k$i") for k=3:n for i=4:n])
+  e2_s_ids = [Symbol("bg8_$k$i") for k=3:n for i=4:n]
+  add!(ng, e2_s, e2_s_names, e2_s_ids)
+
+  e3 = [bg(2,2,j,i;u=u) for j in 5:n for i in 2:n if j!=i]
+  e3_names = indexed_name("bg2_", [parse(Int, "$j$i") for j in 5:n for i in 2:n if j!=i])
+  e3_ids = [Symbol("bg2_$j$i") for j in 5:n for i in 2:n if j!=i]
+  add!(ng, e3, e3_names, e3_ids)
+
+  e3_s = [bg(8,2,j,i;u=u) for j in 5:n for i in 2:n if j!=i]
+  e3_s_names = indexed_name("bg8_", [parse(Int, "$j$i") for j in 5:n for i in 2:n if j!=i])
+  e3_s_ids = [Symbol("bg8_$j$i") for j in 5:n for i in 2:n if j!=i]
+  add!(ng, e3_s, e3_s_names, e3_s_ids)
+
+  e4 = [bg(2,2,4,i;u=u) for i in 2:n if 4!=i && 3!=i]
+  e4_names = indexed_name("bg2_", [parse(Int, "$i") for i in 2:n if 4!=i && 3!=i])
+  e4_ids = [Symbol("bg2_$i") for i in 2:n if 4!=i && 3!=i]
+  add!(ng, e4, e4_names, e4_ids)
+
+  e4_s = [bg(8,2,4,i;u=u) for i in 2:n if 4!=i && 3!=i]
+  e4_s_names = indexed_name("bg8_", [parse(Int, "$i") for i in 2:n if 4!=i && 3!=i])
+  e4_s_ids = [Symbol("bg8_$i") for i in 2:n if 4!=i && 3!=i]
+  add!(ng, e4_s, e4_s_names, e4_s_ids) 
+
+  e5 = [bg(2,2,4,3;u=u)]
+  e5_names = ["bg2_243"]
+  e5_ids = [Symbol("bg2_243")]
+  add!(ng, e5, e5_names, e5_ids)
+  
+  @assert length(ng) == gb_count(n) "Something went wrong: $(length(ng)) != $(gb_count(n))"
+  return ng
+end
+
+function g1(n::Int, names=false)
+  ng = g1_named(n)
+  if names
+    return generators(ng), ng.names
+  else
+    return generators(ng)
+  end
+end
+
 
