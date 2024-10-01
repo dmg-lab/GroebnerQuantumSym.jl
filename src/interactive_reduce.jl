@@ -120,11 +120,22 @@ u = magic_unitary(G0);
 
 
 using Oscar
-n = 4
+n = 6
 G0, names = g0(n,names=true);
-u = magic_unitary(G0)
+G1,names = g1(n,true)
+G0, names = g0_extended(n,names=true);
 
-rwel(3,2; u = u) in G0
+
+u = magic_unitary(G0)
+x1 = sum([u[j,1] - u[k,2] - u[1,j] + u[2,k] for k in 2:n for  j in 2:n if j != k])
+
+normal_form(x1,G0)
+
+r, v = normal_form_with_rep(x1,G0)
+r != 0 && error("r != 0")
+x = reps_vector_to_poly(v,names)
+print(x)
+
 rwel(2,3; u = u) in G0
 groebner_basis(G0)
 
@@ -146,16 +157,37 @@ r
 length(x)
 print(x)
 
-n = 8
+n = 6
 G1,names = g1(n,true)
 u = magic_unitary(G1)
 
-rw = rwel(2,3; u = u)
-bege1 = bg(1,2,3,4; u = u)
+o1=bg(2,3,6,3; u = u)
+o2=bg(8,3,6,2; u = u)
+
+o2*u[6,4]*u[3,3]
+u[2,3]*u[4,6]*o1
+
+ov1 = o2*u[6,4]*u[3,3] -u[2,3]*u[4,6]*o1
+
+r, v = normal_form_with_rep(ov1,G1)
+r != 0 && error("r != 0")
+x = reps_vector_to_poly(v,names)
+
+
+rinj46_1 = rinj(4,2; u = u)u[3,6] -u[4,2]u[2,3]u[3,6]
+rinj46_2 = u[4,2]rwel(3,6; u = u) -u[4,2]u[2,3]u[3,6]
+bege1 = bg(9,4,6; u = u)
+
+rinj46_1-rinj46_2 == bege1 #should be true
+
+r, v = normal_form_with_rep(rinj46,G1)
 
 r, v = normal_form_with_rep(bege1,G1)
 r != 0 && error("r != 0")
 x = reps_vector_to_poly(v,names)
+open("./bege1.txt", "w") do io
+    println(io, x)
+end
 print(x)
 
 
