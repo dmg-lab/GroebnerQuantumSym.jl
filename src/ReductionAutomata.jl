@@ -1,4 +1,4 @@
-#An Auntomata for interactive reduction of a given polynomial
+#An Auntomata or interactive reduction of a given polynomial
 import Base.delete!
 
 
@@ -13,7 +13,8 @@ export ReductionStep,
   add!,
   reduction_automata,
   generators,
-  names
+  names,
+  check_integrity
 
 
 """
@@ -159,6 +160,7 @@ ids = Dict(:g1 => x^2, :g2 => y^2, :g3 => x*y)
 
 ng = named_generators(gs, names, ids)
 
+
 delete!(ng, y^2)
 delete!(ng, :g1)
 
@@ -199,6 +201,7 @@ function named_generators(
   end
   return named_generators(copy(gs), copy(names), copy(identifiers))
 end
+
 
 function _get_ids(ng::NamedGenerators)
   return Dict(value => key for (key, value) in ng.identifiers)
@@ -253,6 +256,30 @@ function add!(ng::NamedGenerators,
   end
 end
 
+function add!(ng::NamedGenerators, ng2::NamedGenerators; check::Bool=false)
+
+  if check
+    for f in generators(ng)
+      r, _ = normal_form_with_rep(f, generators(ng2))
+      if !iszero(r)
+        @warn "This will increase the size of the ideal"
+        continue
+      end 
+    end
+  end
+
+  dct = _get_ids(ng2)
+  @assert length(dct) == length(unique(keys(dct)))
+  for i in 1:length(ng2)
+    if haskey(ng.names, ng2[i]) 
+      @warn "Possible name conflict, skipping"
+      continue
+    end
+    add!(ng, ng2[i], ng2[ng2[i]], dct[i])
+  end
+  return ng 
+end
+
 function named_generators(
   fs::Vector{Generic.FreeAssociativeAlgebraElem{T}},
   names::Vector{String},
@@ -264,6 +291,13 @@ end
 
 generators(ng::NamedGenerators) = ng.gs
 names(ng::NamedGenerators) = ng.names
+
+function check_integrity(ng::NamedGenerators) 
+  @assert length(ng.gs) == length(ng.names) == length(values(ng.identifiers)) "$(length(ng.gs)) != $(length(ng.names)) != $(length(values(ng.identifiers)))"
+  @assert all([x in keys(ng.names) for x in ng.gs])
+  @assert all([x <= length(ng.gs) for x in values(ng.identifiers)])
+  return nothing
+end
 
 mutable struct ReductionAutomata
     generator_set::NamedGenerators
@@ -279,6 +313,7 @@ function check_integrity(Rs::ReductionAutomata)
   # More to come
   return nothing
 end
+
 
 """
   reduction_automata(generator_set::NamedGenerators, f::Generic.FreeAssociativeAlgebraElem{T})
@@ -314,3 +349,4 @@ end
 function get_divisors(Rs::ReductionAutomata, i::Int=1)
   error("Not implemented")
 end
+

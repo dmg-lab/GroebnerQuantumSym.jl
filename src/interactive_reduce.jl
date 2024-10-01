@@ -1,7 +1,7 @@
 
 using Oscar.AbstractAlgebra.Generic
 
-export reps_vector_to_poly
+export reps_vector_to_poly, reduction_string
 
 
 
@@ -76,119 +76,97 @@ function reps_vector_to_poly(v::Vector, names::Dict{<:Generic.FreeAssociativeAlg
 return f[1:end-2]
 end
 
-#= The Example
 
-n = 4
-G0, names = g0_extended(n,names=true)
-u = magic_unitary(G0)
-bg1 = rwel(2,3; u = u)
-r, v = normal_form_with_rep(bg1,G0)
-r != 0 && error("r != 0")
-x = reps_vector_to_poly(v,names)
-length(x)
-print(x)
 
+function reduction_string(
+  g1::NamedGenerators,
+  ele::Generic.FreeAssociativeAlgebraElem;
+  extra::Union{NamedGenerators, Nothing} = nothing,
+  to_file::String = "")
+
+  G1, names = generators(g1), g1.names
+  
+
+
+  if !isnothing(extra)
+    extra_gens, extra_names = generators(extra), extra.names
+    r,v = normal_form_with_rep(ele, extra_gens)
+
+    if iszero(r) 
+      @warn "Reduced to zero using only the extra generators"
+      return reps_vector_to_poly(v, extra_names)
+    end
+    y = reps_vector_to_poly(v, extra_names)
+    println(y)
+  else
+    y = ""
+  end
+
+  r, v = normal_form_with_rep(ele,G1)
+  r != 0 && @warn "This does not reduce to zero, using the normal_form algorithm"
+  x = reps_vector_to_poly(v,names)
+  
+  if y == ""
+    x = x
+  else
+    x = x * " + " * y
+  end
+  
+  if to_file != ""
+    open(to_file, "w") do io
+        println(io, x)
+    end
+  end
+  return x
+end
+
+
+
+#= Reduction of rwel23
 n = 8
-G0, names = g0(n,names=true)
-u = magic_unitary(G0)
-bg1 = bg(1,2,3,4; u = u)
-r, v = normal_form_with_rep(bg1,G0)
-r != 0 && error("r != 0")
-x = reps_vector_to_poly(v,names)
-r
-groebner_basis(G0)
-length(x)
-print(x)
+G1 = g1_named(n)
+u = magic_unitary(n)
+E1 = extra_relations(u)
+QuantumGB.add!(E1, G1)
+
+rwel23 = rwel(2,3; u=u)
+reduction_string(E1, rwel23)
+reduction_string(E1, rwel23; to_file="../data/reduction_strings/n_8_rwel23.txt")
+=#
+
+#= Trying todo the same with bg(9,v,h) for v = 5, h = 6
+n = 8
+G1 = g1_named(n)
+u = magic_unitary(n)
+
+#Thing to reduce
+v = 5
+h = 6
+bege9 = bg(9,v,h; u=u)
+
+
+#Define helper:
+es = [ sum([rinj(v,k; u=u) * u[i,h]  for i in 4:n]) for k = 2:n if k != v];
+es_names = indexed_name("es", [parse(Int, "$k") for k = 2:n if k != v])
+es_ids = [Symbol("es$k") for k in 2:n if k != v]
+E1 = named_generators(es, es_names, es_ids)
 
 
 
-n = 4
-G0, names = g0(n,names=true);
-g1 = groebner_basis(G0)
-x = leading_monomial.(b1)
-showall(x)
-for x in gb1
-open("../examples/gb4.txt", "a") do io
-    println(io, x)
-end
-end
+
+add!(E1, G1; check=false)
 
 
-
-u = magic_unitary(G0);
-
-
-
-using Oscar
-n = 6
-G0, names = g0(n,names=true);
-G1,names = g1(n,true)
-G0, names = g0_extended(n,names=true);
+reduction_string(E1, bege9)
+reduction_string(G1, bege9; to_file="../data/reduction_strings/n_8_bege9.txt")
+reduction_string(G1, bege9)
+=#
 
 
-u = magic_unitary(G0)
-x1 = sum([u[j,1] - u[k,2] - u[1,j] + u[2,k] for k in 2:n for  j in 2:n if j != k])
-
-normal_form(x1,G0)
-
-r, v = normal_form_with_rep(x1,G0)
-r != 0 && error("r != 0")
-x = reps_vector_to_poly(v,names)
-print(x)
-
-rwel(2,3; u = u) in G0
-groebner_basis(G0)
-
-rinj(2,3; u = u)
-gb1 = groebner_basis(G0,6)
-u = magic_unitary(G0)
-
-filter(x -> x != 0, red_bgs)
-
-
-[x in gb1 for x in bg1s]
-
-
-r, v = normal_form_with_rep(bg1s[1],G0)
-v
-r != 0 && error("r != 0")
-x = reps_vector_to_poly(v,names)
-r
-length(x)
-print(x)
-
-n = 6
-G1,names = g1(n,true)
-u = magic_unitary(G1)
-
-o1=bg(2,3,6,3; u = u)
-o2=bg(8,3,6,2; u = u)
-
-o2*u[6,4]*u[3,3]
-u[2,3]*u[4,6]*o1
-
-ov1 = o2*u[6,4]*u[3,3] -u[2,3]*u[4,6]*o1
-
-r, v = normal_form_with_rep(ov1,G1)
-r != 0 && error("r != 0")
-x = reps_vector_to_poly(v,names)
-
-
-rinj46_1 = rinj(4,2; u = u)u[3,6] -u[4,2]u[2,3]u[3,6]
-rinj46_2 = u[4,2]rwel(3,6; u = u) -u[4,2]u[2,3]u[3,6]
-bege1 = bg(9,4,6; u = u)
-
-rinj46_1-rinj46_2 == bege1 #should be true
-
-r, v = normal_form_with_rep(rinj46,G1)
-
-r, v = normal_form_with_rep(bege1,G1)
-r != 0 && error("r != 0")
-x = reps_vector_to_poly(v,names)
-open("./bege1.txt", "w") do io
-    println(io, x)
-end
-print(x)
-
-
+#=Those are useless (lemma 12)
+iter = [(a,k,j,x,y) for a = 2:n for k = 2:n for j = 2:n for x = 3:n for y = 3:n if a != k && k!= j];
+srinj = [u[a,2] * rinj(k,j,x,;u=u) for (a,k,j,x,y) in iter];
+srinj_names = indexed_name("srinj", [parse(Int, "$a$k$j$x$y") for (a,k,j,x,y) in iter]);
+srinj_ids = [Symbol("srinj$a$k$j$x$y") for (a,k,j,x,y) in iter];
+add!(E1, srinj, srinj_names, srinj_ids)
 =#

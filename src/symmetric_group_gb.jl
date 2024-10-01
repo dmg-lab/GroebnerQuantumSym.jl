@@ -11,7 +11,6 @@ export rwel,
   row_sum,
   col_sum,
   gg,
-  g0_extended,
   g0_named,
   red_row_sum,
   red_col_sum,
@@ -24,7 +23,8 @@ export rwel,
   gb_count,
   g1_named,
   g1,
-  g1_extended
+  g1_extended,
+  extra_relations
 
 function _index_number(i::Int)
   dgs = reverse(digits(i))
@@ -73,14 +73,14 @@ function magic_unitary(v::Vector{Generic.FreeAssociativeAlgebraElem{T}}) where {
   return magic_unitary(parent(v[1]))
 end
 
-function rwel(k::Int, j::Int, h::Int=2, v::Int=2; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T}
+function rwel(k::Int, j::Int, h::Int=3, v::Int=3; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T}
   n = size(u)[1]
-  return sum([u[2, k] * u[s, j] for s in h+1:n]; init=zero(T)) - sum([u[s, k] * u[1, j] for s in v+1:n]) + u[1, j] - u[2, k]
+  return sum([u[2, k] * u[s, j] for s in h:n]; init=zero(T)) - sum([u[s, k] * u[1, j] for s in v:n]) + u[1, j] - u[2, k]
 end
 
-function rinj(k::Int, j::Int, h::Int=2, v::Int=2; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T}
+function rinj(k::Int, j::Int, h::Int=3, v::Int=3; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T}
   n = size(u)[1]
-  return sum([u[k, 2] * u[j, s] for s in h+1:n]) - sum([u[k, s] * u[j, 1] for s in v+1:n]) + u[j, 1] - u[k, 2]
+  return sum([u[k, 2] * u[j, s] for s in h:n]) - sum([u[k, s] * u[j, 1] for s in v:n]) + u[j, 1] - u[k, 2]
 end
 
 function wel(i::Int, j::Int, k::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T}
@@ -186,8 +186,8 @@ function g0_named(n::Int=4)
   add!(ng, rwels, rwels_names, rwels_ids)
 
   rinjs = [rinj(k, j; u=u) for j in 2:n for k in 2:n if k != j]
-  rinjs_names = indexed_name("rinj", [parse(Int, "$j$k") for j in 2:n for k in 2:n if k != j])
-  rinjs_ids = [Symbol("rinj$j$k") for j in 2:n for k in 2:n if k != j]
+  rinjs_names = indexed_name("rinj", [parse(Int, "$k$j") for j in 2:n for k in 2:n if k != j])
+  rinjs_ids = [Symbol("rinj$k$j") for j in 2:n for k in 2:n if k != j]
   add!(ng, rinjs, rinjs_names, rinjs_ids)
 
   return ng
@@ -245,51 +245,33 @@ function rwel_col_sum(x::Int; u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=m
 end
 
 
+function extra_relations(u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_unitary()) where {T} 
+    n = size(u)[1]
+    
+    ng =  named_generators(typeof(u[1])[], String[], Symbol[])
 
-function g0_extended(n::Int; names=false)
-  if names
-    gns, gns_names = g0(n, names=true)
-    u = magic_unitary(gns)
     ggs = [gg(i, j, u) for i in 2:n for j in 2:n]
     ggs_names = indexed_name("gg", reshape([parse(Int, "$i$j") for i in 2:n, j in 2:n], (n - 1)^2))
+    ggs_ids = [Symbol("gg$i$j") for i in 2:n for j in 2:n]
+    add!(ng, ggs, ggs_names, ggs_ids)
 
     red_sums_v = red_sums(u)
-    red_sums_names = indexed_name("rrs", [parse(Int, "$i$j") for i in 2:n for j in 2:n])
+    red_rows_names = indexed_name("rrs", [parse(Int, "$i$j") for i in 2:n for j in 2:n])
     red_cols_names = indexed_name("rcs", [parse(Int, "$i$j") for i in 2:n for j in 2:n])
-    red_sums_names = vcat(red_sums_names, red_cols_names)
+    red_rows_ids = [Symbol("rrs$i$j") for i in 2:n for j in 2:n]
+    red_cols_ids = [Symbol("rcs$i$j") for i in 2:n for j in 2:n]
+    add!(ng, red_sums_v, vcat(red_rows_names, red_cols_names), vcat(red_rows_ids, red_cols_ids))
+
 
     rinj_wel_col_sums = vcat([rinj_col_sum(i; u) for i in 2:n], [rwel_col_sum(i; u) for i in 4:n])
     rinj_wel_col_sums_names = vcat(indexed_name("rinjcs", 2:n), indexed_name("rwelcs", 4:n))
-    for i in eachindex(rinj_wel_col_sums_names)
-      gns_names[rinj_wel_col_sums[i]] = rinj_wel_col_sums_names[i]
-    end
+    rinj_wel_col_sums_ids = vcat([Symbol("rinjcs$i") for i in 2:n],[Symbol("rwelcs$i") for i in 4:n])
+    add!(ng, rinj_wel_col_sums, rinj_wel_col_sums_names, rinj_wel_col_sums_ids)
 
-    #rgs = [red_guy(i,j;u) for i in 2:n for j in 2:n if i != j]
-    #rgs_names = indexed_name("mrrs", [parse(Int,"$i$j") for i in 2:n for j in 2:n if i != j])
-    #for i in eachindex(rgs_names)
-    #  gns_names[rgs[i]] = rgs_names[i]
-    #end
-
-
-    gns = vcat(ggs, rinj_wel_col_sums, red_sums_v, gns)
-
-
-    for i in eachindex(ggs_names)
-      gns_names[ggs[i]] = ggs_names[i]
-    end
-    for i in eachindex(red_sums_names)
-      gns_names[red_sums_v[i]] = red_sums_names[i]
-    end
-    return gns, gns_names
-  else
-    gns = g0(n)
-    u = magic_unitary(gns)
-    ggs = reshape([gg(i, j, u) for i in 2:n, j in 2:n], n^2)
-    red_sums_v = red_sums(u)
-    gns = vcat(ggs, red_sums_v, gns)
-    return gns
-  end
+    check_integrity(ng)
+    return ng
 end
+
 
 #=
 using Oscar
@@ -369,33 +351,33 @@ function g1_named(n::Int)
   add!(ng, e1_s, e1_s_names, e1_s_ids)
   
   e2 = [bg(2,k,2,i;u=u) for k=3:n for i=4:n]
-  e2_names = indexed_name("bg2_", [parse(Int, "$k$i") for k=3:n for i=4:n])
-  e2_ids = [Symbol("bg2_$k$i") for k=3:n for i=4:n]
+  e2_names = indexed_name("bg2_", [parse(Int, "$(k)2$i") for k=3:n for i=4:n])
+  e2_ids = [Symbol("bg2_$(k)2$i") for k=3:n for i=4:n]
   add!(ng, e2, e2_names, e2_ids)
 
   e2_s = [bg(8,k,2,i;u=u) for k=3:n for i=4:n]
-  e2_s_names = indexed_name("bg8_", [parse(Int, "$k$i") for k=3:n for i=4:n])
-  e2_s_ids = [Symbol("bg8_$k$i") for k=3:n for i=4:n]
+  e2_s_names = indexed_name("bg8_", [parse(Int, "$(k)2$i") for k=3:n for i=4:n])
+  e2_s_ids = [Symbol("bg8_$(k)2$i") for k=3:n for i=4:n]
   add!(ng, e2_s, e2_s_names, e2_s_ids)
 
   e3 = [bg(2,2,j,i;u=u) for j in 5:n for i in 2:n if j!=i]
-  e3_names = indexed_name("bg2_", [parse(Int, "$j$i") for j in 5:n for i in 2:n if j!=i])
-  e3_ids = [Symbol("bg2_$j$i") for j in 5:n for i in 2:n if j!=i]
+  e3_names = indexed_name("bg2_", [parse(Int, "2$j$i") for j in 5:n for i in 2:n if j!=i])
+  e3_ids = [Symbol("bg2_2$j$i") for j in 5:n for i in 2:n if j!=i]
   add!(ng, e3, e3_names, e3_ids)
-
+  
   e3_s = [bg(8,2,j,i;u=u) for j in 5:n for i in 2:n if j!=i]
-  e3_s_names = indexed_name("bg8_", [parse(Int, "$j$i") for j in 5:n for i in 2:n if j!=i])
-  e3_s_ids = [Symbol("bg8_$j$i") for j in 5:n for i in 2:n if j!=i]
+  e3_s_names = indexed_name("bg8_", [parse(Int, "2$j$i") for j in 5:n for i in 2:n if j!=i])
+  e3_s_ids = [Symbol("bg8_2$j$i") for j in 5:n for i in 2:n if j!=i]
   add!(ng, e3_s, e3_s_names, e3_s_ids)
 
   e4 = [bg(2,2,4,i;u=u) for i in 2:n if 4!=i && 3!=i]
-  e4_names = indexed_name("bg2_", [parse(Int, "$i") for i in 2:n if 4!=i && 3!=i])
-  e4_ids = [Symbol("bg2_$i") for i in 2:n if 4!=i && 3!=i]
+  e4_names = indexed_name("bg2_", [parse(Int, "24$i") for i in 2:n if 4!=i && 3!=i])
+  e4_ids = [Symbol("bg2_24$i") for i in 2:n if 4!=i && 3!=i]
   add!(ng, e4, e4_names, e4_ids)
 
   e4_s = [bg(8,2,4,i;u=u) for i in 2:n if 4!=i && 3!=i]
-  e4_s_names = indexed_name("bg8_", [parse(Int, "$i") for i in 2:n if 4!=i && 3!=i])
-  e4_s_ids = [Symbol("bg8_$i") for i in 2:n if 4!=i && 3!=i]
+  e4_s_names = indexed_name("bg8_", [parse(Int, "24$i") for i in 2:n if 4!=i && 3!=i])
+  e4_s_ids = [Symbol("bg8_24$i") for i in 2:n if 4!=i && 3!=i]
   add!(ng, e4_s, e4_s_names, e4_s_ids) 
 
   e5 = [bg(2,2,4,3;u=u)]
@@ -404,6 +386,7 @@ function g1_named(n::Int)
   add!(ng, e5, e5_names, e5_ids)
   
   @assert length(ng) == gb_count(n) "Something went wrong: $(length(ng)) != $(gb_count(n))"
+  check_integrity(ng)
   return ng
 end
 
