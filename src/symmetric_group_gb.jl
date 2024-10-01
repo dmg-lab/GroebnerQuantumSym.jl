@@ -23,7 +23,8 @@ export rwel,
   g0_count,
   gb_count,
   g1_named,
-  g1
+  g1,
+  g1_extended
 
 function _index_number(i::Int)
   dgs = reverse(digits(i))
@@ -415,4 +416,6 @@ function g1(n::Int, names=false)
   end
 end
 
-
+function g1_extended(n::Int)
+  ng = g1_named(n)
+end
