@@ -1,0 +1,13 @@
+┌ Warning: The active manifest file has dependencies that were resolved with a different julia version (1.10.4). Unexpected behavior may occur.
+└ @ ~/Documents/UniStuff/QuantumGB/Manifest.toml:0
+ERROR: LoadError: AssertionError: n must be greater than 3
+Stacktrace:
+ [1] check_conjecture(n::Int64; deg_bound::Int64)
+   @ QuantumGB ~/Documents/UniStuff/QuantumGB/src/the_conjecture.jl:55
+ [2] top-level scope
+   @ ~/Documents/UniStuff/QuantumGB/computation/conjecture_hpc.jl:7
+ [3] include(fname::String)
+   @ Base.MainInclude ./client.jl:478
+ [4] top-level scope
+   @ none:1
+in expression starting at /homes/combi/wack/Documents/UniStuff/QuantumGB/computation/conjecture_hpc.jl:7

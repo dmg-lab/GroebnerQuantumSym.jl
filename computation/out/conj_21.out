@@ -1,0 +1,11 @@
+┌ Warning: The active manifest file has dependencies that were resolved with a different julia version (1.10.4). Unexpected behavior may occur.
+└ @ ~/Documents/UniStuff/QuantumGB/Manifest.toml:0
+ERROR: LoadError: UndefVarError: `check_conjecture` not defined
+Stacktrace:
+ [1] top-level scope
+   @ ~/Documents/UniStuff/QuantumGB/computation/conjecture_hpc.jl:6
+ [2] include(fname::String)
+   @ Base.MainInclude ./client.jl:478
+ [3] top-level scope
+   @ none:1
+in expression starting at /homes/combi/wack/Documents/UniStuff/QuantumGB/computation/conjecture_hpc.jl:6

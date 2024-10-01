@@ -1,5 +1,5 @@
 #!/bin/bash --login
-#SBATCH --job-name=comp_n_
+#SBATCH --job-name=comp_n_%a
 #SBATCH --array=1-25:1
 #SBATCH --output=out/conj_%a.out
 #SBATCH --time=168:00:00  
