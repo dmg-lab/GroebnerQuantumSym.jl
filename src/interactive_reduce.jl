@@ -169,4 +169,23 @@ srinj = [u[a,2] * rinj(k,j,x,;u=u) for (a,k,j,x,y) in iter];
 srinj_names = indexed_name("srinj", [parse(Int, "$a$k$j$x$y") for (a,k,j,x,y) in iter]);
 srinj_ids = [Symbol("srinj$a$k$j$x$y") for (a,k,j,x,y) in iter];
 add!(E1, srinj, srinj_names, srinj_ids)
+
+
+
+n = 8
+G0 = g0_named(n)
+
+u = magic_unitary(n)
+
+x  = bg(9,3,4,u=u)+rinj(3,2,u=u)*sum(u[4:n,4]) +sum([rinj(3,i,u=u)*sum(u[2:n,4]) for i in (4,n)]) -u[3,2]*sum([u[i,j] for i in (3:n) for j in (3:n) if j != 4])*col_sum(4,u) +wel(3,2,3,u=u)*sum(u[2:n,4]) -u[3,2]*sum([inj(i,4,j,u=u) for i in (2:n) for j in (2:n) if i != j]) +sum([wel(3,2,i,u=u)*u[j,4] for i in (4:n) for j in (2:n)]) -u[3,2]*sum([ip(i,4,u=u) for i in (3:n)]) -u[3,2]*sum([rwel(i,4,u=u) for i in (5:n)]) +sum([u[3,i]*row_sum(j,u)*u[k,4] for i in (3:n) for j in (2:n) for k in (3:n) if j!=3]) +u[3,3]*sum([row_sum(i,u) for i in (4:n)])*u[2,4] -u[3,3]*sum(u[3:n,2])*col_sum(4,u) +rinj(3,5,u=u)*sum([u[i,4] for i in (2:n)]) +rinj(3,6,u=u)*sum([u[i,4] for i in (2:n)]) +rinj(3,7,u=u)*sum([u[i,4] for i in (2:n)]) -u[3,3]*sum([rwel(i,4,u=u) for i in (2:n) if i!=3 && i!=4]) +wel(3,3,2,u=u)*sum([u[i,4] for i in (2:n)]) -inj(3,3,2,u=u)*sum([u[i,4] for i in (3:n)]) -sum([inj(3,3,j,u=u)*u[i,4] for i in (2:n) for j in (4:n)]) -u[3,3]*sum([inj(j,4,i,u=u) for i in (2:n) for j in (2:n) if i != j]) +sum([wel(3,3,j,u=u)*u[i,4] for i in (2:n) for j in (4:n)]) -u[3,3]*sum([ip(i,4,u=u) for i in (3:n)]) -u[3,3]*sum([u[i,j] for i in (3:n) for j in (5:n)])*col_sum(4,u)
+
+reduction_string(G0, x)
+r,v = normal_form_with_rep(x, G0.gs)
+rs4 = G0[:rs4]
+r1,v1 = normal_form_with_rep(x,[rs4]);
+
+ok, ml, mr = Generic.word_divides_leftmost(x.exps[1], rs4.exps[1])
+v
+x
+
 =#
