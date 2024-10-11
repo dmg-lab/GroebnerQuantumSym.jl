@@ -119,12 +119,13 @@ function normal_form_with_rep(
 
     mul_l = one(A)
     mul_r = one(A)
+
     if length(ml) > 0
       mul_l = prod([A[i] for i in ml])
-    elseif length(mr) > 0
+    end
+    if length(mr) > 0
       mul_r = prod([A[i] for i in mr])
     end
-
     push!(reps, (qi, mul_l, g[i], mul_r))
 
     f = new_f
