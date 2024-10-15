@@ -1,13 +1,16 @@
-n = 8
+n = 16
 G1 = g1_named(n)
 u = magic_unitary(n)
 E1 = extra_relations(u)
 QuantumGB.add!(E1, G1)
 
-rwel23 - sum([E1["rinjcs$i"] for i in 2:n])
+rwel23 = rwel(2,3; u=u)
+
+reduction_string(E1, rwel23 - sum([E1["rinjcs$i"] for i in 2:n])
   +sum([E1[Symbol("rwelcs$i")] for i in 4:n])
   +sum([E1["rcs$(i)2"] for i in 3:n])
   +sum([(-E1["gg2$(j)"] -E1["rcs2$(j)"] + E1["rwel$(j)2"] - sum([E1["gg$(i)$(j)"] for i in 3:n])) for j in 3:n])
   +sum([E1["rwel$(i)3"] for i in 4:n])
-  +6*sum([E1["rs$i"] for i in 2:n])
-  -6*sum([E1["cs$i"] for i in 2:n])
+  +(n-2)*sum([E1["rs$i"] for i in 2:n])
+  -(n-2)*sum([E1["cs$i"] for i in 2:n])
+)
