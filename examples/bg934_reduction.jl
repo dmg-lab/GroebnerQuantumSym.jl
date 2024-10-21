@@ -58,7 +58,7 @@ showall(reduction_string(G0, bg(9,3,4,u=u)
                      +sum([row_sum(k,u) for k in (2:n) if k !=3])
                      -(n-2)*col_sum(4,u)))
 
-
+# general version ??? seems so, unless s,t ? 2
 
 s = 5
 t = 6
@@ -87,35 +87,24 @@ reduction_string(G0, bg(9,s,t,u=u)
                      +sum([ip(s,j,u=u)*u[i,t] for i in (2:n) for j in (4:n) if j!=t])
                      -sum([u[s,k]*inj(j,t,i,u=u) for i in (2:n) for j in (2:n) for k in (4:n) if j!=s && i!=j])
                      -sum([u[s,j]*ip(i,t,u=u) for i in (3:n) for j in (4:n) if i !=s])
-
-
-############
-                     +sum([rinj(3,k,u=u)*u[i,4] for i in (2:n) for k in (5:n-1)])
-                     -sum([inj(3,3,j,u=u)*u[i,4] for i in (2:n) for j in (2:n) if j !=3 && (i,j)!=(2,2)])
-                     -u[3,3]*sum([u[i,j] for i in (3:n) for j in (5:n)])*col_sum(4,u)
-                     -u[3,4]*sum([inj(2,4,i,u=u) for i in (3:n)])
-                     -sum(inj(3,4,i,u=u)*u[j,4] for i in (4:n) for j in (2:n) if (i,j) != (4,4))
-                     -u[3,4]*ip(4,4,u=u)
-                     +sum([wel(3,4,j,u=u)*u[i,4] for j in (5:n) for i in (2:n)])
-                     +sum([wel(3,5,2,u=u)*u[i,4] for i in (2:n)])
-                     -sum([row_sum(i,u)*u[j,4] for i in (2:n) for j in (3:n) if i != 3])
-                     -sum([row_sum(i,u)*u[2,4] for i in (4:n)])
-                     +sum([rwel(j,4,u=u) for j in (2:n) if j != 4])
-                     -sum([rinj(3,j,u=u) for j in (2:n) if j != 3])
-                     +sum([u[j,2]*col_sum(4,u) for j in (3:n)])
-                     +(n-3)*sum([u[3,j]*col_sum(4,u) for j in (2:n)])
-                     -sum([u[3,3]*row_sum(j,u) for j in (2:n) if j!=3])
-                     -sum([wel(3,k,j,u=u) for j in (2:n) for k in (2:n) if j != k])
-                     +sum([inj(3,3,j,u=u) for j in (2:n) if j != 3])
-                     +sum([u[j,k]*col_sum(4,u) for j in (3:n) for k in (3:n) if k!= 4])
-                     +sum([inj(k,4,j,u=u) for j in (2:n) for k in (2:n) if j != k && (k,j) != (3,2) && (k,j) != (3,4)])
-                     -sum([u[3,k]*row_sum(j,u) for j in (2:n) for k in (4:n) if j!=3])
-                     +sum([ip(k,4,u=u) for k in (4:n)])
-                     -sum([ip(3,k,u=u) for k in (5:n)])
-                     +sum([u[3,k]*col_sum(4,u) for k in (4:n)])
-                     +sum([wel(3,k,4,u=u) for k in (5:n)])
-                     +sum([row_sum(k,u) for k in (2:n) if k !=3])
-                     -(n-2)*col_sum(4,u)))
+                     -sum([row_sum(i,u)*u[j,t] for i in (2:n) for j in (3:n) if i !=s])
+                     -sum([row_sum(i,u)*u[2,t] for i in (3:n) if i != s])
+                     +sum([rwel(j,t,u=u) for j in (2:n) if j != t])
+                     +sum([u[j,2]*col_sum(t,u) for j in (3:n)])
+                     -sum([rinj(s,j,u=u) for j in (2:n) if j != s])
+                     -sum([wel(s,k,j,u=u) for j in (2:n) for k in (2:n) if j != k])
+                     +(n-3)*sum([u[s,j]*col_sum(t,u) for j in (2:n)])
+                     +sum([u[j,k]*col_sum(t,u) for j in (3:n) for k in (3:n) if t!= 4])
+                     -sum([u[s,3]*row_sum(j,u) for j in (2:n) if j!=s])
+                     -sum([ip(s,k,u=u) for k in (3:n)])
+                     +sum([u[s,k]*col_sum(t,u) for k in (3:n) if k !=t])
+                     -sum([u[s,k]*row_sum(j,u) for j in (2:n) for k in (4:n) if j != s])
+                     +sum([wel(s,k,t,u=u) for k in (4:n) if k != t])
+                     +sum([inj(k,t,j,u=u) for j in (2:n) for k in (2:n) if j != k && (k,t)!= (s,t)])
+                     -sum([u[k,t]*col_sum(t,u) for k in (3:n) if k != s])
+                     +sum([ip(k,t,u=u) for k in (3:n)])
+                     +sum([row_sum(k,u) for k in (2:n) if k !=s])
+                     -(n-2)*col_sum(t,u))
 
 
 
