@@ -60,7 +60,25 @@ showall(reduction_string(G0, bg(9,3,4,u=u)
 
 # general version ??? seems so, unless s,t ? 2
 
-s = 5
+#NOT((s,t)<=(4,4))  -> ok    (to be confirmed, only some examples)
+#s = 4 , t >= 5 -> ok   (tbc)
+#s=t=4 -> error
+#s=4, t=2 -> "almost" zero, 6 lines, almost all length 3 and all inj or ip
+#s=3 , t>= 5  -> ok
+#s=3 , t= 4  -> error
+#s=3, t=2 -> "almost" zero, 6 lines, almost all length 3 and all inj or ip
+
+##########....
+##########....
+#a#eoooooo....
+#a#eoooooo....
+#a#aoooooo....
+#a#aoooooo....
+#a#aoooooo....
+#a#aoooooo....
+
+
+k = 5
 t = 6
 
 reduction_string(G0, bg(9,s,t,u=u)
