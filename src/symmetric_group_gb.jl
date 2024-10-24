@@ -252,7 +252,7 @@ function extra_relations(u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_
 
     ggs = [gg(i, j, u) for i in 2:n for j in 2:n]
     ggs_names = indexed_name("gg", reshape([parse(Int, "$i$j") for i in 2:n, j in 2:n], (n - 1)^2))
-    ggs_ids = [Symbol("gg$i$j") for i in 2:n for j in 2:n]
+    ggs_ids = [Symbol("gg$j$i") for i in 2:n for j in 2:n]
     add!(ng, ggs, ggs_names, ggs_ids)
 
     red_sums_v = red_sums(u)
@@ -317,7 +317,7 @@ z == 6 && ismissing(i) && return u[k, 2] * ip(3, j, u=u) - rinj(k, j, u=u) * u[3
 z == 7 && !ismissing(i) && return wel(2, k, j, u=u) * u[3, i] - u[2, k] * rwel(j, i, u=u)
 z == 8 && !ismissing(i) && return u[2, k] * wel(3, j, i, u=u) - rwel(k, j, u=u) * u[3, i]
 z == 9 &&  ismissing(i) && return rinj(k, 2, u=u) * u[3, j] - u[k, 2] * rwel(3, j, u=u)
-z == 10 && ismissing(i) && return u[2, j] * rinj(3, k, u=u) - rwel(j, 2, u=u) * u[k, 3] #
+z == 10 && ismissing(i) && return u[2, k] * rinj(3, j, u=u) - rwel(k, 2, u=u) * u[j, 3] #
 z == 11 && !ismissing(i) && return inj(k, j, 2, u=u) * u[3, i] - u[k, j] * rwel(j, i, u=u) #
 z == 12 && !ismissing(i) && return u[2, k] * inj(3, j, i, u=u) - rwel(k, j, u=u) * u[i, j]
 z == 13 && !ismissing(i) && return wel(k, j, 2, u=u) * u[i, 3] - u[k, j] * rinj(k, i, u=u)
