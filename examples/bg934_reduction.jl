@@ -79,6 +79,33 @@ s = 5
 t = 6
 
 reduction_string(G0, bg(9,s,t,u=u)
++sum(rinj(s,j,u=u)*u[i,t] for i in (2:n) for j in (2:n) if j!= s && (j!=2 || (j==2 && i!=2 && i!=3)))
+-sum(u[s,k]*u[i,j] for i in (3:n) for j in (2:n) for k in (2:n) if j != t && (k!=2||(k==2 && j!=2)))*col_sum(t,u)
++sum(wel(s,k,j,u=u)*u[i,t] for i in (2:n) for j in (2:n) for k in (2:n) if (j!=t || k==3 || k==2) && j!=k)
+-sum(u[s,k]*inj(j,t,i,u=u) for i in (2:n) for j in (2:n) for k in (2:n) if i!=j && ((k!=2 && k!=3 && j!=s)|| (k==2 && t!=2) || k==3))
+-sum(u[s,j]*ip(i,t,u=u) for i in (3:n) for j in (2:n) if j==3 || (j!=3 && j!=2 && i !=s) || (j==2 && t!=2))
+-sum([u[s,k]*rwel(i,t,u=u) for i in (2:n) for k in (2:n) if i != t && (k!=2 || (k==2 && i != 2 && i!=3))])
++sum([u[s,i]*row_sum(j,u)*u[k,t] for i in (3:n) for j in (2:n) for k in (2:n) if j!=s && (k,j)!=(2,2)])
++sum([ip(s,j,u=u)*u[i,t] for i in (2:n) for j in (3:n) if j!=t])
+-sum(row_sum(i,u)*u[j,t] for i in (2:n) for j in (2:n) if i !=s &&(j!=2||(j==2 && i!=2)))
++sum([rwel(j,t,u=u) for j in (2:n) if j != t])
+-sum([rinj(s,j,u=u) for j in (2:n) if j != s])
+-sum([wel(s,k,j,u=u) for j in (2:n) for k in (2:n) if j != k && (j!=t || k ==2 || k==3)])
++sum([inj(k,t,j,u=u) for j in (2:n) for k in (2:n) if j != k && k !=s])
++sum([u[j,k]*col_sum(t,u) for j in (3:n) for k in (2:n) if k!=t])
++sum([u[s,k]*col_sum(t,u) for k in (3:n)])
++(n-3)*sum([u[s,k]*col_sum(t,u) for k in (2:n)])
+-sum([u[s,k]*row_sum(j,u) for j in (2:n) for k in (3:n) if j != s])
+-sum([ip(s,k,u=u) for k in (3:n)])
++sum([ip(k,t,u=u) for k in (3:n) if (k,t)!=(s,2)])
++sum([row_sum(k,u) for k in (2:n) if k !=s])
+-(n-2)*col_sum(t,u))
+
+
+
+##### before cleaning : 
+#initial reduction string has 35.000 bytes, with this it is already zero (tested for n<=9:
+reduction_string(G0, bg(9,s,t,u=u)
                      +rinj(s,2,u=u)*sum(u[4:n,t])
                      +sum([rinj(s,i,u=u)*sum(u[2:n,t]) for i in (3,n) if i!= s])
                      -u[s,2]*sum([u[i,j] for i in (3:n) for j in (3:n) if j != t])*col_sum(t,u)
@@ -122,10 +149,56 @@ reduction_string(G0, bg(9,s,t,u=u)
                      -(n-2)*col_sum(t,u))
 
 
+#### all leading monomials are distinct from each other and smaller theen lm(bg(9,s,t))
+vec_of_leading_mons=[lm(rinj(s,2,u=u)*sum(u[4:n,t])),
+                     lm(sum([rinj(s,i,u=u)*sum(u[2:n,t]) for i in (3,n) if i!= s])),
+                     lm(u[s,2]*sum([u[i,j] for i in (3:n) for j in (3:n) if j != t])*col_sum(t,u)),
+                     lm(wel(s,2,3,u=u)*sum(u[2:n,t])),
+                     lm(sum([rinj(s,j,u=u)*u[i,t] for i in (2:n) for j in (4:n-1) if j!=s])),
+                     lm(sum([wel(s,2,i,u=u)*u[j,t] for i in (4:n) for j in (2:n)])),
+                     lm(u[s,2]*sum(append!([inj(i,t,j,u=u) for i in (2:n) for j in (2:n) if i != j && t!=2],[0*ip(1,1)]))),
+                     lm(u[s,2]*sum(append!([ip(i,t,u=u) for i in (3:n) if t!=2],[0*ip(1,1)]))),
+                     lm(u[s,2]*sum([rwel(i,t,u=u) for i in (4:n) if i!=t])),
+                     lm(sum([u[s,i]*row_sum(j,u)*u[k,t] for i in (3:n) for j in (2:n) for k in (3:n) if j!=s])),
+                     lm(u[s,3]*sum([row_sum(j,u) for j in (3:n) if j!=s])*u[2,t]),
+                     lm(u[s,3]*sum([rwel(i,t,u=u) for i in (2:n) if i!=t])),
+                     lm(sum([wel(s,3,j,u=u)*u[i,t] for i in (2:n) for j in (2:n) if j !=3])),
+                     lm(sum([wel(s,k,j,u=u)*u[i,t] for i in (2:n) for j in (2:n) for k in (4:n) if j!=t && j!=k])),
+                     lm(sum([u[s,k]*u[i,j] for i in (3:n) for j in (2:n) for k in (3:n) if j != t])*col_sum(t,u)),
+                     lm(sum([ip(s,3,u=u)*u[i,t] for i in (2:n)])),
+                     lm(u[s,3]*sum([inj(j,t,i,u=u) for i in (2:n) for j in (2:n) if i != j])),
+                     lm(u[s,3]*sum([ip(i,t,u=u) for i in (3:n)])),
+                     lm(sum([u[s,j]*row_sum(i,u) for i in (3:n) for j in (4:n) if  i != s])*u[2,t]),
+                     lm(sum([u[s,k]*rwel(i,t,u=u) for i in (2:n) for k in (4:n) if i != t])),
+                     lm(sum([ip(s,j,u=u)*u[i,t] for i in (2:n) for j in (4:n) if j!=t])),
+                     lm(sum([u[s,k]*inj(j,t,i,u=u) for i in (2:n) for j in (2:n) for k in (4:n) if j!=s && i!=j])),
+                     lm(sum([u[s,j]*ip(i,t,u=u) for i in (3:n) for j in (4:n) if i !=s])),
+                     lm(sum([row_sum(i,u)*u[j,t] for i in (2:n) for j in (3:n) if i !=s])),
+                     lm(sum([row_sum(i,u)*u[2,t] for i in (3:n) if i != s])),
+                     lm(sum([rwel(j,t,u=u) for j in (2:n) if j != t])),
+                     lm(sum([u[j,2]*col_sum(t,u) for j in (3:n)])),
+                     lm(sum([rinj(s,j,u=u) for j in (2:n) if j != s])),
+                     lm(sum([wel(s,k,j,u=u) for j in (2:n) for k in (2:n) if j != k])),
+                     lm((n-3)*sum([u[s,j]*col_sum(t,u) for j in (2:n)])),
+                     lm(sum([u[j,k]*col_sum(t,u) for j in (3:n) for k in (3:n)])),
+                     lm(sum([u[s,3]*row_sum(j,u) for j in (2:n) if j!=s])),
+                     lm(sum([ip(s,k,u=u) for k in (3:n)])),
+                     lm(sum([u[s,k]*col_sum(t,u) for k in (3:n) if k !=t])),
+                     lm(sum([u[s,k]*row_sum(j,u) for j in (2:n) for k in (4:n) if j != s])),
+                     lm(sum([wel(s,k,t,u=u) for k in (4:n) if k != t])),
+                     lm(sum([inj(k,t,j,u=u) for j in (2:n) for k in (2:n) if j != k && k !=s])),
+                     lm(sum([u[k,t]*col_sum(t,u) for k in (3:n) if k != s])),
+                     lm(sum([ip(k,t,u=u) for k in (3:n) if (k,t)!=(s,2)])),
+                     lm(sum([row_sum(k,u) for k in (2:n) if k !=s])),
+                     lm((n-2)*col_sum(t,u))]
 
 
 
 
+n_m1 = n - 1
+G1_m1 = g1_named(n_m1)
+u_m1 = magic_unitary(n_m1)
+G0_m1 = g0_named(n_m1)
 
 
 
