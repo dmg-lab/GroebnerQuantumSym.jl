@@ -5,6 +5,8 @@ u = magic_unitary(n)
 
 G0 = g0_named(n)
 
+
+### dated:: (see below for new rep)
 showall(reduction_string(G0, bg(9,3,4,u=u)
                      +rinj(3,2,u=u)*sum(u[4:n,4])
                      +sum([rinj(3,i,u=u)*sum(u[2:n,4]) for i in (4,n)])
@@ -102,7 +104,7 @@ reduction_string(G0, bg(9,s,t,u=u)
 -(n-2)*col_sum(t,u))
 
 
-
+#### dated: see above
 ##### before cleaning : 
 #initial reduction string has 35.000 bytes, with this it is already zero (tested for n<=9:
 reduction_string(G0, bg(9,s,t,u=u)
@@ -148,7 +150,7 @@ reduction_string(G0, bg(9,s,t,u=u)
                      +sum([row_sum(k,u) for k in (2:n) if k !=s])
                      -(n-2)*col_sum(t,u))
 
-
+#### dated: 
 #### all leading monomials are distinct from each other and smaller theen lm(bg(9,s,t))
 vec_of_leading_mons=[lm(rinj(s,2,u=u)*sum(u[4:n,t])),
                      lm(sum([rinj(s,i,u=u)*sum(u[2:n,t]) for i in (3,n) if i!= s])),
@@ -201,6 +203,44 @@ u_m1 = magic_unitary(n_m1)
 G0_m1 = g0_named(n_m1)
 
 
+
+################### try to prove eq directly.
+
+# projection on degree 3 of bg_9(s,t)
+phi3_bg9st = sum(u[s,2]*u[2,b]*u[3,t] for b in (4:n))-
+sum(u[s,a]*u[2,1]*u[3,t] for a in (3:n))-
+sum(u[s,2]*u[2,3]*u[k,t] for k in (4:n))+
+sum(u[s,2]*u[j,3]*u[1,t] for j in (3:n))
+## test 
+#bg(9,s,t,u=u)-phi3_bg9st
+#u₂₁*u₃₆ + u₅₂*u₂₃ - u₅₂*u₁₆ - u₅₂*u₃₆
+#i.e., no deg 3 terms
+
+
+# projection on degree 3 of term1
+phi3_term1 = sum(u[s,2]*u[j,b]*u[k,t] for j in (2:n) for b in (3:n) for k in (2:n) if j!= s && (j!=2 || (j==2 && k!=2 && k!=3)))-
+sum(u[s,a]*u[j,1]*u[k,t] for a in (3:n) for j in (2:n) for k in (2:n) if j!= s && (j!=2 || (j==2 && k!=2 && k!=3)))
+## test 
+#sum(rinj(s,j,u=u)*u[i,t] for i in (2:n) for j in (2:n) if j!= s && (j!=2 || (j==2 && i!=2 && i!=3)))-phi3_term1
+#---> no deg 3 terms
+
+
+# projection on degree 3 of term2
+phi3_term2 = -sum(u[s,a]*u[j,b]*u[k,t] for a in (2:n) for j in (3:n) for b in (2:n) for k in (1:n) if b != t && (a!=2||(a==2 && b!=2)))
+## test
+-sum(u[s,k]*u[i,j] for i in (3:n) for j in (2:n) for k in (2:n) if j != t && (k!=2||(k==2 && j!=2)))*col_sum(t,u)-phi3_term2
+#---> no deg 3 terms
+
+
+# projection on degree 3 of term2
+phi3_term3 = 
+
++sum(wel(s,k,j,u=u)*u[i,t] for i in (2:n) for j in (2:n) for k in (2:n) if (j!=t || k==3 || k==2) && j!=k)
+-sum(u[s,k]*inj(j,t,i,u=u) for i in (2:n) for j in (2:n) for k in (2:n) if i!=j && ((k!=2 && k!=3 && j!=s)|| (k==2 && t!=2) || k==3))
+-sum(u[s,j]*ip(i,t,u=u) for i in (3:n) for j in (2:n) if j==3 || (j!=3 && j!=2 && i !=s) || (j==2 && t!=2))
+-sum([u[s,k]*rwel(i,t,u=u) for i in (2:n) for k in (2:n) if i != t && (k!=2 || (k==2 && i != 2 && i!=3))])
++sum([u[s,i]*row_sum(j,u)*u[k,t] for i in (3:n) for j in (2:n) for k in (2:n) if j!=s && (k,j)!=(2,2)])
++sum([ip(s,j,u=u)*u[i,t] for i in (2:n) for j in (3:n) if j!=t])
 
 
 
