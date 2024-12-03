@@ -215,7 +215,7 @@ Base.getindex(ng::NamedGenerators, s::Symbol) = ng.gs[ng.identifiers[s]]
 Base.setindex!(ng::NamedGenerators, g::Generic.FreeAssociativeAlgebraElem, s::Symbol) = ng.gs[ng.identifiers[s]] = g
 Base.getindex(ng::NamedGenerators, f::Generic.FreeAssociativeAlgebraElem) = ng.names[f]
 Base.setindex!(ng::NamedGenerators, name::String, f::Generic.FreeAssociativeAlgebraElem) = ng.names[f] = name
-
+Base.getindex(ng::NamedGenerators, s::String) = ng[Symbol(s)]
 
 
 function delete!(ng::NamedGenerators, f::Generic.FreeAssociativeAlgebraElem{T}) where {T<:FieldElement}
