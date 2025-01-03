@@ -11,8 +11,8 @@ reduction_string(G1,bg(8,t,s,2,u=u)*u[r,3]+u[2,t]*u[4,s]*rinj(3,r,u=u))
 
 # u[i,a]*u[j,b]*u[k,c]*u[m,d]
 
-# graded-4 component finished?
-reduction_string(G1,u[s,2]*bg(8,3,t,r,u=u)+rinj(s,2,u=u)*u[4,t]*u[3,r]
+# graded-4 component
+gbrep_gr4 = (u[s,2]*bg(8,3,t,r,u=u)+rinj(s,2,u=u)*u[4,t]*u[3,r]
 +sum(rinj(s,2,u=u)*u[i,t]*u[3,r] for i in (5:n))
 -sum(rinj(s,3,u=u)*u[i,t]*u[2,r] for i in (4:n))
 -sum(rinj(s,j,u=u)*u[i,t]*u[m,r] for m in (4:n) for i in (2:n) for j in (3:n) if i != 3 && j != s)
@@ -46,7 +46,42 @@ reduction_string(G1,u[s,2]*bg(8,3,t,r,u=u)+rinj(s,2,u=u)*u[4,t]*u[3,r]
 )
 
 
-
+reduction_string(G0,gbrep_gr4
+-sum(row_sum(2,u)*u[b,t]*u[3,r] for b in (4:n))
++sum(row_sum(3,u)*u[b,t]*u[c,r] for b in (2:n) for c in (4:n) if b != 3)
++sum(row_sum(3,u)*u[b,t]*u[2,r] for b in (4:n) if b != 3)
++sum(row_sum(a,u)*u[b,t]*u[c,r] for a in (4:n) for b in (2:n) for c in (4:n) if a!= s)
++sum(row_sum(a,u)*u[b,t]*u[2,r] for a in (4:n) for b in (3:n) if a!= s)
+-sum(bg(8,a,t,r,u=u) for a in (2:n) if a != t)   ## from here on G0 suffices
++sum(u[a,2]*col_sum(t,u)*u[3,r] for a in (3:n))
+-u[3,2]*rwel(t,r,u=u)
+-sum(u[a,i]*u[b,t]*col_sum(r,u) for a in (3:n) for i in (2:n) for b in (3:n)) # 3k step
++sum(u[s,2]*u[s,j]*col_sum(r,u) for j in (3:n))
+#+sum(wel(3,2,t,u=u)*u[c,r] for c in (2:n) if c != 3)
++sum(wel(3,i,t,u=u)*u[c,r] for i in (2:n) for c in (2:n) if c != 3 && i!=t)
+-sum(u[b,2]*rwel(t,r,u=u) for b in (4:n) if b != s)
+-sum(u[b,i]*rwel(t,r,u=u) for b in (3:n) for i in (3:n) if b != s) # 4k step
+-sum(u[s,2]*rwel(j,r,u=u) for j in (3:n) if j != r)
++sum(rinj(s,2,u=u)*u[c,r] for c in (4:n))
++sum(rinj(s,3,u=u)*u[c,t] for c in (2:n) if c!=3)
++sum(u[s,2]*wel(3,b,t,u=u) for b in (3:n) if b!=t)
+-2*sum(u[s,2]*u[b,j]*col_sum(r,u) for b in (3:n) for j in (3:n))
++2*sum(rinj(s,a,u=u)*u[b,r] for a in (3:n) for b in (2:n) if a != s)
+-sum(u[s,2]*wel(3,b,r,u=u) for b in (3:n) if b != r)
++u[s,2]*ip(3,t,u=u)
+-u[s,2]*ip(3,r,u=u)
++sum(rinj(s,a,u=u)*u[b,t] for a in (4:n) for b in (2:n) if a != s) # 6k step
+-sum(rinj(s,a,u=u)*u[3,r] for a in (4:n) if a != s)
++sum(wel(s,2,a,u=u)*u[b,r] for a in (3:n) for b in (2:n) if b!=3)
++5*sum(u[s,a]*col_sum(t,u)*u[3,r] for a in (2:n))
+-5*sum(u[s,a]*rwel(t,r,u=u) for a in (2:n))
+-4*sum(u[s,2]*u[b,t]*col_sum(r,u) for b in (3:n))
++sum(u[s,2]*u[b,r]*col_sum(r,u) for b in (3:n))
+-sum(u[s,2]*inj(a,r,b,u=u) for a in (2:n) for b in (2:n) if a!=b)
+-sum(u[s,2]*ip(a,r,u=u) for a in (3:n))
+-u[s,2]*wel(3,t,r,u=u)
++sum(u[a,3]*col_sum(t,u)*u[3,r] for a in (3:n))
+)
 
 
 
