@@ -1,3 +1,11 @@
+using Oscar
+n = 8
+G1 = g1_named(n)
+u = magic_unitary(n)
+
+G0 = g0_named(n)
+
+
 s = 5
 t = 6
 r = 7
@@ -53,18 +61,17 @@ reduction_string(G0,gbrep_gr4
 +sum(row_sum(a,u)*u[b,t]*u[c,r] for a in (4:n) for b in (2:n) for c in (4:n) if a!= s)
 +sum(row_sum(a,u)*u[b,t]*u[2,r] for a in (4:n) for b in (3:n) if a!= s)
 +sum(u[s,j]*row_sum(2,u)*u[i,r] for j in (3:n) for i in (4:n))
--sum(u[s,3]*row_sum(a,u)*u[3,r] for a in (3:n))
+-sum(u[s,j]*row_sum(a,u)*u[3,r] for a in (4:n) for j in (3:n) if a != s)
 +sum(u[s,j]*row_sum(a,u)*u[i,t] for j in (3:n) for a in (3:n) for i in (2:n) if (a,i)!=(3,3) && a!=s) # >6k step
 +2*sum(u[s,j]*row_sum(a,u)*u[i,r] for j in (3:n) for a in (3:n) for i in (2:n) if a!=s) # >4k step
 -sum(bg(8,a,t,r,u=u) for a in (2:n) if a != t)   ## from here on G0 suffices
-+sum(u[a,2]*col_sum(t,u)*u[3,r] for a in (3:n))
-+sum(u[a,3]*col_sum(t,u)*u[3,r] for a in (3:n))
++sum(u[a,i]*col_sum(t,u)*u[3,r] for a in (3:n) for i in (2:n) if i!=t || (a,i)==(s,t))
 +5*sum(u[s,a]*col_sum(t,u)*u[3,r] for a in (2:n))
--sum(u[a,i]*u[b,t]*col_sum(r,u) for a in (3:n) for i in (2:n) for b in (3:n)) # 3k step
-+sum(u[s,2]*u[s,j]*col_sum(r,u) for j in (3:n))
+-sum(u[a,i]*u[b,t]*col_sum(r,u) for a in (3:n) for i in (2:n) for b in (3:n) if (a,b)!=(s,s)) # 3k step
++sum(u[s,i]*u[s,j]*col_sum(r,u) for i in (2:n) for j in (2:n) if j !=t && (i,j)!=(2,2))
 -2*sum(u[s,a]*u[b,j]*col_sum(r,u) for a in (2:n) for b in (3:n) for j in (2:n) if (j,a)!=(2,2))
 -4*sum(u[s,j]*u[b,t]*col_sum(r,u) for j in (2:n) for b in (3:n))
-+sum(u[s,2]*u[b,r]*col_sum(r,u) for b in (3:n))
++sum(u[s,i]*u[b,r]*col_sum(r,u) for i in (2:n) for b in (3:n))
 -sum(u[b,i]*rwel(t,r,u=u) for b in (3:n) for i in (2:n) if b != s) # 4k step
 -sum(u[s,i]*rwel(j,r,u=u) for i in (2:n) for j in (2:n) if j != r && (i,j)!=(2,2)) # 4k step 
 -5*sum(u[s,a]*rwel(t,r,u=u) for a in (2:n))
@@ -73,17 +80,20 @@ reduction_string(G0,gbrep_gr4
 +sum(rinj(s,a,u=u)*u[b,t] for a in (4:n) for b in (2:n) if a != s) # 6k step
 -sum(rinj(s,a,u=u)*u[3,r] for a in (4:n) if a != s)
 +2*sum(rinj(s,a,u=u)*u[b,r] for a in (3:n) for b in (2:n) if a != s)
-+sum(u[s,2]*wel(3,b,t,u=u) for b in (3:n) if b!=t)
--sum(u[s,2]*wel(3,b,r,u=u) for b in (3:n) if b != r)
-+u[s,2]*ip(3,t,u=u)
--u[s,2]*ip(3,r,u=u)
--sum(u[s,j]*ip(a,r,u=u) for j in (3:n) for a in (3:n))
++sum(u[s,a]*wel(3,b,t,u=u) for a in (2:n) for b in (2:n) if b!=t && (a,b)!=(2,2))
+-sum(u[s,a]*wel(3,b,r,u=u) for a in (2:n) for b in (2:n) if b != r && (a,b)!=(2,2))
+-sum(u[s,a]*wel(3,t,r,u=u) for a in (2:n) if a!=t)
++sum(ip(3,t,u=u)*u[c,r] for c in (2:n))
++sum(ip(i,t,u=u)*u[3,r] for i in (4:n) if i!=s)
++sum(ip(s,i,u=u)*u[c,r] for i in (3:n) for c in (2:n))
++sum(u[s,i]*ip(3,t,u=u) for i in (2:n))
+-sum(u[s,i]*ip(3,r,u=u) for i in (2:n))
+-sum(u[s,j]*ip(a,r,u=u) for j in (2:n) for a in (3:n))
 -sum(u[s,j]*inj(a,r,b,u=u) for j in (2:n) for a in (2:n) for b in (2:n) if a!=b)
-+sum(inj(s,j,a,u=u)*u[3,r] for j in (3:n) for a in (2:n) if a!= s)
-+sum(inj(i,t,a,u=u)*u[3,r] for i in (3:n) for a in (2:n) if a!= i)
-+sum(wel(s,j,a,u=u)*u[b,r] for j in (2:n) for a in (3:n) for b in (2:n) if b!=3 && j!=a) #5k
++sum(inj(s,j,a,u=u)*u[3,r] for j in (3:n) for a in (2:n) if a!= s && j!=t)
++sum(inj(i,t,a,u=u)*u[3,r] for i in (2:n) for a in (2:n) if a!= i && (i,a)!=(2,3) && (i,a)!=(s,2))
++sum(wel(s,j,a,u=u)*u[b,r] for j in (2:n) for a in (2:n) for b in (2:n) if b!=3 && j!=a) #5k
 +sum(wel(3,i,t,u=u)*u[c,r] for i in (2:n) for c in (2:n) if c != 3 && i!=t)
--u[s,2]*wel(3,t,r,u=u)
 )
 
 
