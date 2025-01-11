@@ -19,6 +19,7 @@ include("gbsteps.jl")
 include("symmetric_group_gb.jl")
 include("interactive_reduce.jl")
 include("the_conjecture.jl")
+include("coloured_cube_partitions.jl")
 #include("pointed_Bases.jl")
 
 
