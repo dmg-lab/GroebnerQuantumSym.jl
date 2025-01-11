@@ -13,8 +13,12 @@ w = 5
 
 #reduction_string(G1,bg(8,s,t,2,u=u)*u[r,4]*u[v,3]-u[2,s+u[2,t]*u[4,s]*rinj(3,r,u=u))
 
-reduction_string(G1, bg(8,s,t,2,u=u)*u[r,4]*u[w,3]-u[2,s]*u[4,t]*bg(2,3,r,w,u=u))
-+sum(bg(8,s,t,2,u=u)*u[r,i]*u[t,3] for i in (5:n))
--sum(bg(8,s,t,a,u=u)*u[r,i]*u[t,j] for a in (3:n) for i in (2:n) for j in (4:n)) ## conditions.. 
-
+reduction_string(G1, bg(8,s,t,2,u=u)*u[r,4]*u[w,3]-u[2,s]*u[4,t]*bg(2,3,r,w,u=u)
++sum(bg(8,s,t,2,u=u)*u[r,i]*u[w,3] for i in (5:n))
+#-sum(bg(8,s,t,3,u=u)*u[r,i]*u[w,j] for i in (5:n) for j in (5:n))
+-sum(bg(8,s,t,3,u=u)*u[r,2]*u[w,j] for j in (4:n)) 
+-sum(bg(8,s,t,3,u=u)*u[r,4]*u[w,j] for j in (5:n)) 
+-sum(bg(8,s,t,3,u=u)*u[r,i]*u[w,2] for i in (4:n)) 
+-sum(bg(8,s,t,3,u=u)*u[r,i]*u[w,4] for i in (5:n)) 
+)
 
