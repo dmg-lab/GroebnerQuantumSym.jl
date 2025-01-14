@@ -76,8 +76,6 @@ function reps_vector_to_poly(v::Vector, names::Dict{<:Generic.FreeAssociativeAlg
 return f[1:end-2]
 end
 
-
-
 function reduction_string(
   g1::NamedGenerators,
   ele::Generic.FreeAssociativeAlgebraElem;
@@ -135,7 +133,7 @@ reduction_string(E1, rwel23; to_file="../data/reduction_strings/n_8_rwel23.txt")
 =#
 
 #= Trying todo the same with bg(9,v,h) for v = 5, h = 6
-n = 8
+n = 6
 G1 = g1_named(n)
 u = magic_unitary(n)
 
@@ -144,22 +142,108 @@ v = 5
 h = 6
 bege9 = bg(9,v,h; u=u)
 
+using Base.Iterators
+
+[(i, j) for (i, j) in Iterators.product(2:n, 2:n)]
+
+
+n = 6
+G1 = g1_named(n)
+u = magic_unitary(n)
+bege8243 = bg(8,2,4,3; u=u)
+
+wesc_iterators = [(i,j,k,t) for i = 2:n for j = 2:n for k = 2:n for t in 1:n if j != k];
+wesc = [G1["wel$(i)$(j)$(k)"]*u[1,t] for (i,j,k,t) in wesc_iterators];
+wesc_names = indexed_name("wesc", [parse(Int, "$i$j$k$t") for (i,j,k,t) in wesc_iterators]);
+wesc_ids = [Symbol("wesc$i$j$k$t") for (i,j,k,t) in wesc_iterators];
+
+iesc_iterators = [(i,j,k,t) for i = 2:n for j = 2:n for k = 2:n for t in 1:n if i != k];
+iesc = [G1["inj$(i)$(j)$(k)"]*u[t,1] for (i,j,k,t) in iesc_iterators];
+iesc_names = indexed_name("iesc", [parse(Int, "$i$j$k$t") for (i,j,k,t) in iesc_iterators]);
+iesc_ids = [Symbol("iesc$i$j$k$t") for (i,j,k,t) in iesc_iterators];
+
+uucs_iterators = [(i,j,k,h,f) for i = 1:n for j = 1:n for k = 2:n for h = 2:n for f = 2:n if i != k && j != h && f !=h];
+uucs = [u[i,j]*u[k,h]*G1["cs$f"]-u[i,j]*G1["wel$(k)$(h)$(f)"] for (i,j,k,h,f) in uucs_iterators];
+uucs_names = indexed_name("uucs", [parse(Int, "$i$j$k$h$f") for (i,j,k,h,f) in uucs_iterators]);
+uucs_ids = [Symbol("uucs$i$j$k$h$f") for (i,j,k,h,f) in uucs_iterators];
+
+uurs_iterators = [(i,j,k,h,f) for i = 2:n for j = 2:n for k = 2:n for h = 2:n for f = 2:n if i != k && j != h && f !=k];
+uurs = [u[i,j]*u[k,h]*G1["rs$f"]-u[i,j]*G1["inj$(k)$(h)$(f)"] for (i,j,k,h,f) in uurs_iterators];
+uurs_names = indexed_name("uurs", [parse(Int, "$i$j$k$h$f") for (i,j,k,h,f) in uurs_iterators]);
+uurs_ids = [Symbol("uurs$i$j$k$h$f") for (i,j,k,h,f) in uurs_iterators];
+
+ursu_iterators = [(i,j,k,h,f) for i = 2:n for j = 2:n for k = 2:n for h = 2:n for f = 2:n if i != k && k != h];
+ursu = [u[i,j]*G1["rs$k"]*u[h,f] - u[i,j]*G1["inj$(k)$(f)$(h)"] - G1["inj$(i)$(j)$(k)"]*u[h,f] for (i,j,k,h,f) in ursu_iterators];
+ursu_names = indexed_name("ursu", [parse(Int, "$i$j$k$h$f") for (i,j,k,h,f) in ursu_iterators]);
+ursu_ids = [Symbol("ursu$i$j$k$h$f") for (i,j,k,h,f) in ursu_iterators];
+
+ucsu_iterators = [(i,j,k,h,f) for i = 2:n for j = 2:n for k = 2:n for h = 2:n for f = 2:n if k !=j && f != k];
+ucsu = [u[i,j]*G1["cs$k"]*u[h,f] - u[i,j]*G1["wel$(h)$(k)$(f)"] - G1["wel$(i)$(j)$(k)"]*u[h,f] for (i,j,k,h,f) in ucsu_iterators];
+ucsu_names = indexed_name("ucsu", [parse(Int, "$i$j$k$h$f") for (i,j,k,h,f) in ucsu_iterators]);
+ucsu_ids = [Symbol("ucsu$i$j$k$h$f") for (i,j,k,h,f) in ucsu_iterators];
+
+bg2sr_iterators = [(i,j) for i = 2:n for j = 2:n if i != j && (i,j) != (2,3)];
+bg2sr = [sum([G1["bg2_$(i)$(j)$(k)"] for k in 2:n if k != j && (j,k) != (2,3)]) for (i,j) in bg2sr_iterators];
+bg2sr_names = indexed_name("bg2sr", [parse(Int, "$i$j") for (i,j) in bg2sr_iterators]);
+bg2sr_ids = [Symbol("bg2sr$i$j") for (i,j) in bg2sr_iterators];
+
+
+E1 = named_generators(wesc, wesc_names, wesc_ids)
+add!(E1, iesc, iesc_names, iesc_ids)
+add!(E1, uucs, uucs_names, uucs_ids)
+add!(E1, uurs, uurs_names, uurs_ids)
+add!(E1, ursu, ursu_names, ursu_ids)
+add!(E1, ucsu, ucsu_names, ucsu_ids)
+add!(E1, bg2sr, bg2sr_names, bg2sr_ids)
+add!(E1, G1; check=false)
+
+reduction_string(E1, bege8243
+-sum([E1["bg2_2$(k)3"] for k in 4:n])+sum([E1["bg8_2$(k)3"] for k in 5:n])
+-u[3,2]*E1["cs4"]*u[3,3] +u[3,2]*E1["rwel43"]+E1["wel324"]*u[3,3] 
+)
+,to_file="../data/reduction_strings/n_6_bege8243.txt")
+
+row_sum(1,u)
+reduction_string(G1, row_sum(1,u))
+
 
 #Define helper:
-es = [ sum([rinj(v,k; u=u) * u[i,h]  for i in 4:n]) for k = 2:n if k != v];
+rrcs = [u[5,2]*u[k,j]*G1["cs6"]-u[5,2]*G1["wel$(k)$(j)6"] for k in 3:n if k != 5 for j in 3:n if j != 6]
+rrcs_names = indexed_name("rrcs", [parse(Int, "$k$j") for k = 3:n if k != 5 for j = 3:n if j != 6])
+rrcs_ids = [Symbol("rrcs$k$j") for k = 3:n if k != 5 for j = 3:n if j != 6]
+E1 = named_generators(rrcs, rrcs_names, rrcs_ids)
+
+swel = [G1["wel5$k$j"]*u[1,6] for j in 3:n for k in 3:n if k != j]
+swel_names = indexed_name("swel", [parse(Int, "$k$j") for j = 3:n for k = 3:n if k != j])
+swel_ids = [Symbol("swel$k$j") for j = 3:n for k = 3:n if k != j]
+add!(E1, swel, swel_names, swel_ids)
+
+
+es = [ sum([rinj(v,k; u=u) * u[i,h]  for i in 2:n if i!=k]) for k = 2:n if k != v];
 es_names = indexed_name("es", [parse(Int, "$k") for k = 2:n if k != v])
 es_ids = [Symbol("es$k") for k in 2:n if k != v]
-E1 = named_generators(es, es_names, es_ids)
-
-
-
+add!(E1, es, es_names, es_ids)
 
 add!(E1, G1; check=false)
 
 
-reduction_string(E1, bege9)
-reduction_string(G1, bege9; to_file="../data/reduction_strings/n_8_bege9.txt")
-reduction_string(G1, bege9)
+
+rrrcs = [sum([E1["rrcs$(k)$(j)"]-E1["es$k"] + G1["wel52$k"]*u[1,6] for k in 3:n if k != 5]) for j in 3:n if j != 6]
+rrrcs_names = indexed_name("rrrcs", [parse(Int, "$j") for j in 3:n if j != 6])
+rrrcs_ids = [Symbol("rrrcs$j") for j in 3:n if j != 6]
+E2 = named_generators(rrrcs, rrrcs_names, rrrcs_ids)
+add!(E2, E1)
+
+
+reduction_string(E2, bege9)
+reduction_string(G1, bege9; to_file="../data/reduction_strings/n_6_bege9.txt")
+
+reduction_string(E2, bege9 +
+sum([G1["rinj52"]*u[j,6] for j in 4:n])
+  -E1["rrcs33"] + E1["es3"] - E1["rrcs43"] + E1["es4"] - E1["wel523"]*u[1,6]
+  -E1["rrcs63"] + E1["es6"] 
+)
+; to_file="../data/reduction_strings/n_6_bege9.txt")
 =#
 
 
