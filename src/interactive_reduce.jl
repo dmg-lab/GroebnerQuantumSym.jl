@@ -80,7 +80,8 @@ function reduction_string(
   g1::NamedGenerators,
   ele::Generic.FreeAssociativeAlgebraElem;
   extra::Union{NamedGenerators, Nothing} = nothing,
-  to_file::String = "")
+  to_file::String = "",
+  len::Int=-1)
 
   G1, names = generators(g1), g1.names
   
@@ -100,8 +101,8 @@ function reduction_string(
     y = ""
   end
 
-  r, v = normal_form_with_rep(ele,G1)
-  r != 0 && @warn "This does not reduce to zero, using the normal_form algorithm"
+  r, v = normal_form_with_rep(ele,G1, len)
+  len==-1 && r != 0 && @warn "This does not reduce to zero, using the normal_form algorithm"
   x = reps_vector_to_poly(v,names)
   
   if y == ""
@@ -151,6 +152,7 @@ n = 6
 G1 = g1_named(n)
 u = magic_unitary(n)
 bege8243 = bg(8,2,4,3; u=u)
+reduction_string(G1,bege8243; len=40)
 
 wesc_iterators = [(i,j,k,t) for i = 2:n for j = 2:n for k = 2:n for t in 1:n if j != k];
 wesc = [G1["wel$(i)$(j)$(k)"]*u[1,t] for (i,j,k,t) in wesc_iterators];

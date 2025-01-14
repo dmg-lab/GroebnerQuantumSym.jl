@@ -92,12 +92,17 @@ Dict{AbstractAlgebra.Generic.FreeAssociativeAlgebraElem, AbstractAlgebra.Generic
 eldElem}} with 2 entries:
   x^2 => 2*x^2
   y^2 => 4*y^2
+
+zr,  dct = normal_form_with_rep(f, g,2);
+
+
 ```
 
 """
 function normal_form_with_rep(
   f::Generic.FreeAssociativeAlgebraElem{T},
   g::Vector{Generic.FreeAssociativeAlgebraElem{T}},
+  len::Int=-1
 ) where {T}
 
   A = parent(f)
@@ -127,6 +132,12 @@ function normal_form_with_rep(
       mul_r = prod([A[i] for i in mr])
     end
     push!(reps, (qi, mul_l, g[i], mul_r))
+
+    #break if computation limit is set
+    if len>=0 && length(reps)>=len
+      @warn "Not a full reduction! Only $len steps were computed."
+      return f,reps
+    end
 
     f = new_f
     #Check if the leading monomial has been killed
