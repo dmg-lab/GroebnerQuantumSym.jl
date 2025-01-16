@@ -151,8 +151,10 @@ function merge_dct(d1::Dict{T,H}, d2::Dict{T,H}) where {T,H}
     end
 end
 
-function g0_named(n::Int=4)
-  u = magic_unitary(n)
+function g0_named(n::Int=4; u=-1)
+  if u == -1
+    u = magic_unitary(n)
+  end
 
   cs = [col_sum(i, u) for i in 1:n]
   cs_names = indexed_name("cs", 1:n)
@@ -336,8 +338,8 @@ function gb_count(n::Int)
   return 2*(n-2)*(n-3)*(n-1) + 2*(n-4)*(n-2)+2*(n-3)+1 + g0_count(n)
 end
 
-function g1_named(n::Int)
-  ng= g0_named(n)  
+function g1_named(n::Int; u=-1)
+  ng= g0_named(n, u=u)  
   u = magic_unitary(ng)
 
   e1 = [bg(2,k,j,i;u=u) for k=3:n for j=3:n for i=2:n if i!=j && j!=k]
