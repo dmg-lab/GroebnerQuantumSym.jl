@@ -78,7 +78,7 @@ function recursive_reduction(
   reps=Tuple{elem_type(base_ring(A)),Generic.FreeAssociativeAlgebraElem{T},Generic.FreeAssociativeAlgebraElem{T},Generic.FreeAssociativeAlgebraElem{T}}[],
   base_case=-1,
   open::Int=1,
-  logging_length::Int=-1
+  bfs::Bool=false
   ) where {T}
 
   logging_max = -1
@@ -90,7 +90,6 @@ function _recursive_reduction(
   reps=Tuple{elem_type(base_ring(A)),Generic.FreeAssociativeAlgebraElem{T},Generic.FreeAssociativeAlgebraElem{T},Generic.FreeAssociativeAlgebraElem{T}}[],
   base_case=-1,
   open::Int=1,
-  logging_length::Int=-1
   ) where {T}
   base_length=-1
 
@@ -159,6 +158,89 @@ function _recursive_reduction(
   return base_case
 end
 
+function _bfs_reduction(
+  f::Generic.FreeAssociativeAlgebraElem{T},
+  g::Vector{Generic.FreeAssociativeAlgebraElem{T}};
+  A::Generic.FreeAssociativeAlgebra{T}=parent(f),
+  reps=Tuple{elem_type(base_ring(A)),Generic.FreeAssociativeAlgebraElem{T},Generic.FreeAssociativeAlgebraElem{T},Generic.FreeAssociativeAlgebraElem{T}}[],
+  base_case=-1,
+  open::Int=1,
+  logging_length::Int=-1
+  ) where {T}
+  base_length=-1
+
+  if base_case != -1
+    base_length = length(base_case[2])
+  end
+
+  iszero(f) && return f, reps
+
+  if base_length != -1 && length(reps) >= base_length - 1
+    return f, -1
+  end
+
+  queue = [(f, deepcopy(reps), open)]
+
+  while !isempty(queue)
+    current_f, current_reps, current_open = popfirst!(queue)
+
+    choices = get_all_divisors(current_f, g)
+    current_open += length(choices)
+
+
+    first_choice = true
+    for (qi, _, ele, _) in choices
+      current_open -= 1
+      _, ml, mr = Generic.word_divides_leftmost(current_f.exps[1], ele.exps[1])
+      new_f = Generic._sub_rest(current_f, Generic.mul_term(qi, ml, ele, mr), 1)
+      mul_l = one(A)
+      mul_r = one(A)
+
+      if length(ml) > 0
+        mul_l = prod([A[i] for i in ml])
+      end
+      if length(mr) > 0
+        mul_r = prod([A[i] for i in mr])
+      end
+      new_reps = deepcopy(current_reps)
+      push!(new_reps, (qi, mul_l, ele, mul_r))
+
+      ##Dont know about that
+      if base_length != -1 && length(new_reps) >= base_length - 1
+        continue
+      end
+
+      if iszero(new_f)
+        if base_length == -1 || length(new_reps) < base_length
+          base_case = (new_f, new_reps)
+          base_length = length(new_reps)
+          if logging_length == -1
+            println("Found a base case of length $(base_length)")
+          elseif base_length < logging_length
+            println("Improved the base case from $(logging_length) to $(length(new_reps))")
+          end
+          logging_length = length(new_reps)
+        end
+      else
+        if first_choice 
+            first_choice = false
+            pushfirst!(queue, (new_f, new_reps, current_open))
+        else
+          push!(queue, (new_f, new_reps, current_open))
+        end
+      end
+    end
+  end
+
+  if base_case == -1
+    return f, -1
+  end
+  return base_case
+end
+
+if bfs
+  return _bfs_reduction(f, g, A=A, reps=reps, base_case=base_case, open=open)
+end
 return _recursive_reduction(f, g, A=A, reps=reps, base_case=base_case, open=open)
 end
 
@@ -169,7 +251,7 @@ u = magic_unitary(n)
 g = G1.gs
 bg934 = bg(9,3,4,u=u)
 normal_form_with_rep_choices(bg934, g)
-recursive_reduction(bg934,g)
+recursive_reduction(bg934,g; bfs=true)
 
 
 =#
