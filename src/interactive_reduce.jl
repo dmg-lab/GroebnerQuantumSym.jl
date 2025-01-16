@@ -189,6 +189,17 @@ bg2sr = [sum([G1["bg2_$(i)$(j)$(k)"] for k in 2:n if k != j && (j,k) != (2,3)]) 
 bg2sr_names = indexed_name("bg2sr", [parse(Int, "$i$j") for (i,j) in bg2sr_iterators]);
 bg2sr_ids = [Symbol("bg2sr$i$j") for (i,j) in bg2sr_iterators];
 
+function help1(i,j)
+  ans = -sum([E1["ucsu$(i)$(j)$(k)$(3)$(3)"] for k in 4:n])
+  ans += sum([sum([E1["uucs$(i)$(j)$(k)$(h)$(3)"] for h in 4:n]) for k in 3:n if k != i])
+  ans += sum([u[i,j]*E1["rwel$(k)$(3)"] for k in 4:n])
+  ans += sum([E1["wesc$(i)$(j)$(k)$(3)"] for k in 4:n])
+  ans += sum([E1["bg2sr$(i)$(k)"] for k in 2:n if k != i])
+  ans -= sum([E1["bg2_$(i)$(k)3"] for k in 4:n if k != i])
+  return ans
+end
+
+
 
 E1 = named_generators(wesc, wesc_names, wesc_ids)
 add!(E1, iesc, iesc_names, iesc_ids)
@@ -201,9 +212,13 @@ add!(E1, G1; check=false)
 
 reduction_string(E1, bege8243
 -sum([E1["bg2_2$(k)3"] for k in 4:n])+sum([E1["bg8_2$(k)3"] for k in 5:n])
--u[3,2]*E1["cs4"]*u[3,3] +u[3,2]*E1["rwel43"]+E1["wel324"]*u[3,3] 
+-u[3,2]*E1["cs4"]*u[3,3] +u[3,2]*E1["rwel43"]+E1["wel324"]*u[3,3]
++help1(3,2)-u[3,2]*E1["rwel43"]+E1["ucsu32433"]-E1["wel325"]*u[3,3] - E1["wel326"]*u[3,3] #Scheinbar nicht fine enough
++help1(4,2)+help1(5,2)+help1(6,2)
+,len=40)
 )
 ,to_file="../data/reduction_strings/n_6_bege8243.txt")
+
 
 row_sum(1,u)
 reduction_string(G1, row_sum(1,u))
