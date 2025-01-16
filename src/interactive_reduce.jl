@@ -81,7 +81,8 @@ function reduction_string(
   ele::Generic.FreeAssociativeAlgebraElem;
   extra::Union{NamedGenerators, Nothing} = nothing,
   to_file::String = "",
-  len::Int=-1)
+  len::Int=-1,
+  debug::Bool=false)
 
   G1, names = generators(g1), g1.names
   
@@ -102,6 +103,10 @@ function reduction_string(
   end
 
   r, v = normal_form_with_rep(ele,G1, len)
+  if debug
+    @info "The reduction required $(length(v)) steps."
+    println()
+  end
   len==-1 && r != 0 && @warn "This does not reduce to zero, using the normal_form algorithm"
   x = reps_vector_to_poly(v,names)
   
@@ -152,7 +157,7 @@ n = 6
 G1 = g1_named(n)
 u = magic_unitary(n)
 bege8243 = bg(8,2,4,3; u=u)
-reduction_string(G1,bege8243; len=40)
+reduction_string(G1,bege8243; debug=true)
 
 wesc_iterators = [(i,j,k,t) for i = 2:n for j = 2:n for k = 2:n for t in 1:n if j != k];
 wesc = [G1["wel$(i)$(j)$(k)"]*u[1,t] for (i,j,k,t) in wesc_iterators];
@@ -201,12 +206,24 @@ add!(E1, G1; check=false)
 
 reduction_string(E1, bege8243
 -sum([E1["bg2_2$(k)3"] for k in 4:n])+sum([E1["bg8_2$(k)3"] for k in 5:n])
--u[3,2]*E1["cs4"]*u[3,3] +u[3,2]*E1["rwel43"]+E1["wel324"]*u[3,3] 
-)
+-u[3,2]*E1["cs4"]*u[3,3] +u[3,2]*E1["rwel43"]+E1["wel324"]*u[3,3]
++E1["bg2sr32"]
+;len=30)
 ,to_file="../data/reduction_strings/n_6_bege8243.txt")
 
 row_sum(1,u)
 reduction_string(G1, row_sum(1,u))
+
+rwel uucs uucs 
+
+ucsu₅₂₄₃₃ + -1*u₅₂*rwel₄₃ + -1*bg2sr₅₂ + -1*uucs₅₂₃₄₃ + -1*bg2sr₅₃ + -1*uucs₅₂₄₄₃ + -1*bg2sr₅₄ + bg2_₅₄₃ + -1*wesc₅₂₄₃ + -1*uucs₅₂₆₄₃ + -1*bg2sr₅₆ + bg2_₅₆₃ + ucsu₅₂₅₃₃ +
+
+ucsu₆₂₄₃₃ + -1*u₆₂*rwel₄₃ + -1*bg2sr₆₂ + -1*uucs₆₂₃₄₃ + -1*bg2sr₆₃ + -1*uucs₆₂₄₄₃ + -1*bg2sr₆₄ + bg2_₆₄₃ + -1*uucs₆₂₅₄₃ + -1*bg2sr₆₅ + bg2_₆₅₃ + -1*wesc₆₂₄₃ + ucsu₆₂₅₃₃ +
+
+-1*u₅₂*rwel₅₃ + -1*uucs₅₂₃₅₃ + -1*uucs₅₂₄₅₃ + -1*wesc₅₂₅₃ + -1*uucs₅₂₆₅₃ + ucsu₅₂₆₃₃ + -1*u₅₂*rwel₆₃ + -1*uucs₅₂₃₆₃ + -1*uucs₅₂₄₆₃ + -1*wesc₅₂₆₃ + -1*uucs₅₂₆₆₃ +
+
+-1*u₆₂*rwel₅₃ + -1*uucs₆₂₃₅₃ + -1*uucs₆₂₄₅₃ + -1*uucs₆₂₅₅₃ + -1*wesc₆₂₅₃ + ucsu₆₂₆₃₃ + -1*u₆₂*rwel₆₃ + -1*uucs₆₂₃₆₃ + -1*uucs₆₂₄₆₃ + -1*uucs₆₂₅₆₃ + -1*wesc₆₂₆₃ +
+
 
 
 #Define helper:
@@ -258,20 +275,31 @@ add!(E1, srinj, srinj_names, srinj_ids)
 
 
 
-n = 8
-G0 = g0_named(n)
+#Checking on commutators
+#First check if the gb is correct
+I0 = quantum_symmetric_group(5)
+u = magic_unitary(I0.gens[1])
+G1 = g1_named(5,u=u)
+G1b = G1.gs
+I1 = ideal(G1b)
+I1.gb = I1.gens
 
-u = magic_unitary(n)
 
-x  = bg(9,3,4,u=u)+rinj(3,2,u=u)*sum(u[4:n,4]) +sum([rinj(3,i,u=u)*sum(u[2:n,4]) for i in (4,n)]) -u[3,2]*sum([u[i,j] for i in (3:n) for j in (3:n) if j != 4])*col_sum(4,u) +wel(3,2,3,u=u)*sum(u[2:n,4]) -u[3,2]*sum([inj(i,4,j,u=u) for i in (2:n) for j in (2:n) if i != j]) +sum([wel(3,2,i,u=u)*u[j,4] for i in (4:n) for j in (2:n)]) -u[3,2]*sum([ip(i,4,u=u) for i in (3:n)]) -u[3,2]*sum([rwel(i,4,u=u) for i in (5:n)]) +sum([u[3,i]*row_sum(j,u)*u[k,4] for i in (3:n) for j in (2:n) for k in (3:n) if j!=3]) +u[3,3]*sum([row_sum(i,u) for i in (4:n)])*u[2,4] -u[3,3]*sum(u[3:n,2])*col_sum(4,u) +rinj(3,5,u=u)*sum([u[i,4] for i in (2:n)]) +rinj(3,6,u=u)*sum([u[i,4] for i in (2:n)]) +rinj(3,7,u=u)*sum([u[i,4] for i in (2:n)]) -u[3,3]*sum([rwel(i,4,u=u) for i in (2:n) if i!=3 && i!=4]) +wel(3,3,2,u=u)*sum([u[i,4] for i in (2:n)]) -inj(3,3,2,u=u)*sum([u[i,4] for i in (3:n)]) -sum([inj(3,3,j,u=u)*u[i,4] for i in (2:n) for j in (4:n)]) -u[3,3]*sum([inj(j,4,i,u=u) for i in (2:n) for j in (2:n) if i != j]) +sum([wel(3,3,j,u=u)*u[i,4] for i in (2:n) for j in (4:n)]) -u[3,3]*sum([ip(i,4,u=u) for i in (3:n)]) -u[3,3]*sum([u[i,j] for i in (3:n) for j in (5:n)])*col_sum(4,u)
 
-reduction_string(G0, x)
-r,v = normal_form_with_rep(x, G0.gs)
-rs4 = G0[:rs4]
-r1,v1 = normal_form_with_rep(x,[rs4]);
+groebner_basis(I0)
 
-ok, ml, mr = Generic.word_divides_leftmost(x.exps[1], rs4.exps[1])
-v
-x
+
+is_subset(I0, I1)
+is_subset(I1,I0)
+
+IC = g1_named(5,u=u)
+srinj = [u[4,5]*u[3,3] - u[3,3]*u[4,5]];
+srinj_names = indexed_name("srinj", [parse(Int, "$a$k$j$x$y") for (a,k,j,x,y) in iter]);
+srinj_ids = [Symbol("srinj$a$k$j$x$y") for (a,k,j,x,y) in iter];
+add!(E1, srinj, srinj_names, srinj_ids)
+
+comm1 = u[4,5]*u[3,3] - u[3,3]*u[4,5]
+
+
 
 =#
