@@ -82,7 +82,8 @@ function reduction_string(
   extra::Union{NamedGenerators, Nothing} = nothing,
   to_file::String = "",
   len::Int=-1,
-  debug::Bool=false)
+  debug::Bool=false,
+  words::Vector{String} = String[])
 
   G1, names = generators(g1), g1.names
   
@@ -103,11 +104,18 @@ function reduction_string(
   end
 
   r, v = normal_form_with_rep(ele,G1, len)
+
+
+
   if debug
     @info "The reduction required $(length(v)) steps."
     println()
   end
   len==-1 && r != 0 && @warn "This does not reduce to zero, using the normal_form algorithm"
+
+  if words != []
+    filter!(x -> replace(g1.names[x[3]], r"[^a-zA-Z]" => "") in words,v)
+  end
   x = reps_vector_to_poly(v,names)
   
   if y == ""
@@ -132,6 +140,16 @@ G1 = g1_named(n)
 u = magic_unitary(n)
 E1 = extra_relations(u)
 QuantumGB.add!(E1, G1)
+rwel23 = rwel(2,3; u=u)
+
+
+reduction_string(E1, rwel23; words=["rinjcs","rwel"],len=20)
+
+g1 = generators(G1)
+r, v = normal_form_with_rep(rwel23,g1,-1)
+as = ["rinj","rwel"]
+
+G1.names[v[1][3]]
 
 rwel23 = rwel(2,3; u=u)
 reduction_string(E1, rwel23)
