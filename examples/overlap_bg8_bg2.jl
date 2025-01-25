@@ -12,8 +12,6 @@ r = 7
 w = 5
 
 
-reduction_string(G1,bg(8,s,t,2,u=u)*u[r,4]*u[v,3]-u[2,s+u[2,t]*u[4,s]*rinj(3,r,u=u))
-
 print(
 reduction_string(G1, bg(8,s,t,2,u=u)*u[r,4]*u[w,3]-u[2,s]*u[4,t]*bg(2,3,r,w,u=u)
 +sum(bg(8,s,t,2,u=u)*u[r,i]*u[w,3] for i in (5:n))
@@ -35,9 +33,15 @@ reduction_string(G1, bg(8,s,t,2,u=u)*u[r,4]*u[w,3]-u[2,s]*u[4,t]*bg(2,3,r,w,u=u)
 -sum(u[2,s]*inj(a,t,3,u=u)*u[r,c]*u[w,c] for a in (4:n) for c in (4:n))  ## THIS WOULD BE NEW 
 +sum(u[2,s]*u[4,t]*u[3,t]*u[r,d]*row_sum(w,u) for d in (3:n))
 -sum(u[2,s]*u[j,t]*bg(2,3,r,w,u=u) for j in (5:n))
++sum(u[3,s]*u[2,t]*bg(2,c,r,w,u=u) for c in (4:n) if c!=r)
 -sum(u[3,s]*col_sum(t,u)*u[3,2]*u[r,j]*u[w,3] for j in (4:n))
 +sum(u[3,s]*col_sum(t,u)*u[3,i]*u[r,j]*u[w,k] for i in (3:n) for j in (2:n) for k in (2:n) if i!=j && k!=3 && j!=k && i!=t)
-;len=300
++sum(u[3,s]*rwel(t,2,u=u)*u[r,b]*u[w,3] for b in (4:n))
+-sum(u[3,s]*rwel(t,a,u=u)*u[r,b]*u[w,c] for a in (3:n) for b in (2:n) for c in (2:n) if a!=t && b!=c && c!=3 && a!=b)
++sum(u[3,s]*u[2,t]*wel(r,a,b,u=u)*u[w,c] for a in (3:n) for b in (2:n) for c in (3:n) if a!=b)
+-sum(u[3,s]*u[2,t]*wel(r,2,b,u=u)*u[w,3] for b in (4:n))
+;words=["rinj"]
+,len=300
 ))
 
 
