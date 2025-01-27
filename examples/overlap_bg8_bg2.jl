@@ -38,10 +38,17 @@ reduction_string(G1, bg(8,s,t,2,u=u)*u[r,4]*u[w,3]-u[2,s]*u[4,t]*bg(2,3,r,w,u=u)
 +sum(u[3,s]*col_sum(t,u)*u[3,i]*u[r,j]*u[w,k] for i in (3:n) for j in (2:n) for k in (2:n) if i!=j && k!=3 && j!=k && i!=t)
 +sum(u[3,s]*rwel(t,2,u=u)*u[r,b]*u[w,3] for b in (4:n))
 -sum(u[3,s]*rwel(t,a,u=u)*u[r,b]*u[w,c] for a in (3:n) for b in (2:n) for c in (2:n) if a!=t && b!=c && c!=3 && a!=b)
-+sum(u[3,s]*u[2,t]*wel(r,a,b,u=u)*u[w,c] for a in (3:n) for b in (2:n) for c in (3:n) if a!=b)
++sum(u[3,s]*u[2,t]*wel(r,a,b,u=u)*u[w,c] for a in (3:n) for b in (2:n) for c in (3:n) if a!=b) # SOMETHNG WRG
 -sum(u[3,s]*u[2,t]*wel(r,2,b,u=u)*u[w,3] for b in (4:n))
-;words=["rinj"]
-,len=300
+-sum(u[3,s]*u[2,t]*u[c,3]*row_sum(r,u)*u[w,3] for c in (4:n) if c != r)
++sum(u[3,s]*u[2,t]*u[c,3]*rinj(r,w,u=u) for c in (4:n) if c != r) # it could be c!=n
+#+sum(u[3,s]*u[2,t]*u[a,c]*rinj(r,w,u=u) for a in (4:n-1) for c in (3:n)) # it went up?
++sum(u[3,s]*u[2,t]*u[c,3]*u[r,d]*row_sum(w,u) for c in (4:n) for d in (3:n))
+-sum(u[3,s]*u[2,t]*inj(b,3,r,u=u)*u[w,c] for b in (4:n) for c in (2:n) if c != 3 && b!=r)
+-sum(u[3,s]*u[2,t]*u[b,3]*inj(r,c,w,u=u) for b in (4:n) for c in (4:n))
+;
+words=["wel"],
+len=300
 ))
 
 
