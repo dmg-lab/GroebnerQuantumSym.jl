@@ -1,36 +1,88 @@
-t= 7
+using QuantumGB
+using ProgressMeter
+#=
+include("../examples/bg223t_data.jl")
 
-reduction_string(G0, bg(2,2,3,t,u=u)+rwel(2,4,u=u)*u[t,3]
-                     +sum(bg(2,2,i,t,u=u) for i in (4:n) if i!=t)
-                     -sum(u[j,2]*wel(t,i,3,u=u) for i in (4:n) for j in (2:n))
-                     +sum(rwel(2,i,u=u)*u[t,3] for i in (5:n))
-                     +sum(u[j,k]*col_sum(i,u)*u[t,3] for i in (4:n) for j in (3:n) for k in (2:n))
-                     +sum(bg(2,j,i,t,u=u) for i in (2:n) for j in (3:n) if i!=t && i!=j)
-                     -sum(wel(i,j,k,u=u)*u[t,3] for i in (3:n) for j in (2:n) for k in (4:n) if j!=k && (i,j)!=(t,2))
-                     -sum(wel(i,4,3,u=u)*u[t,3] for i in (2:n) if (i,4)!=(t,2))
-                     -sum(wel(i,j,2,u=u)*u[t,3] for i in (3:n) for j in (2:n) if j!= 2 && (i,j)!=(t,2))
-                     -sum(u[j,k]*row_sum(i,u)*u[t,3] for i in (2:n) for j in (2:n) for k in (3:n) if i!=t && i!=j)
-                     +sum(rwel(3,i,u=u)*u[t,3] for i in (2:n) if i!=3)
-                     +sum(rwel(k,i,u=u)*u[t,3] for i in (2:n) for k in (5:n) if i!=k)
-                     +sum(inj(k,j,i,u=u)*u[t,3] for i in (2:n) for k in (2:n) for j in (3:n) if i!=k)
-                     -sum(u[k,j]*wel(t,i,3,u=u) for i in (2:n) for j in (3:n) for k in (2:n) if i!=3 && k !=t)
-                     -sum(u[k,3]*ip(t,3,u=u) for k in (2:n) if k != t)
-                     -sum(u[k,j]*ip(t,3,u=u) for k in (2:n) for j in (5:n) )
-                     +sum(u[i,j]*col_sum(2,u)*u[t,3] for i in (3:n) for j in (2:n))
-                     +sum(u[i,j]*col_sum(3,u)*u[t,3] for i in (3:n) for j in (5:n))
-                     -sum(u[i,k]*col_sum(k,u)*u[t,3] for i in (3:n) for k in (2:n) if k!=4 && k!=3)
-                     -sum(u[i,4]*col_sum(4,u)*u[t,3] for i in (3:n))
-                     +rwel(4,2,u=u)*u[t,3]
-                     +sum(rwel(4,i,u=u)*u[t,3] for i in (5:n))
-                     +sum(u[i,4]*inj(j,3,t,u=u) for i in (2:n) for j in (2:n) if j!=t)
-                     +sum(u[t,i]*ip(t,3,u=u) for i in (4:n))
-                     -sum(wel(k,j,3,u=u)*u[t,3] for k in (3:n) for j in (5:n))
-                     +(n-2)*sum(row_sum(i,u)*u[t,3] for i in (2:n) if i != t)
-                     -(n-2)*sum(col_sum(i,u)*u[t,3] for i in (2:n))
-                     +2*col_sum(3,u)*u[t,3]
-                     -2*sum(inj(i,3,t,u=u) for i in (2:n) if i!= t)
-                     +(n-2)*sum(wel(t,i,3,u=u) for i in (2:n) if i !=3)
-                     -wel(t,2,3,u=u)
-                     +4*ip(t,3,u=u))
+test_all(collect(6:12),"../examples/bg223t_data.jl")
+x = 7
+ns = collect(6:12)
+@test_reduction ns "../examples/bg223t_data.jl"
+@test_reduction x "../examples/bg223t_data.jl"
 
+@test_reduction x reduction to_be_reduced free_vars
+@test_reduction ns reduction to_be_reduced free_vars
+=#
 
+macro _test_core(reduction::Symbol,to_be_reduced::Symbol,free_vars::Symbol)
+  vars = Meta.parse.((map(x->String(x)[1:end-1],keys(eval(free_vars)))))
+  
+  free_vars_expr = eval(free_vars)
+  loops = Expr(:block)
+  reduction_expr = Meta.parse(eval(reduction))
+  to_be_reduced_expr = Meta.parse(eval(to_be_reduced))
+
+  loops = quote
+    local _reduction = $reduction_expr
+    local _to_be_reduced = $to_be_reduced_expr
+    local red = _to_be_reduced+_reduction
+    iszero(red) && continue
+    push!(report,(reduction_string(G1,red),red))
+  end
+
+  for (key, value) in zip(vars,Meta.parse.(values(free_vars_expr)))
+    loop = :(for $key in $value
+      $(loops.args...)
+    end)
+    loops = Expr(:block, loop)
+  end
+
+  quote
+    local report = []
+
+    $(loops.args...)
+
+    report
+  end
+end
+
+macro test_reduction(n::Symbol,reduction::Symbol,to_be_reduced::Symbol,free_vars::Symbol)
+  _n_expr = eval(n)
+
+  if typeof(_n_expr) == Int64
+    expr = quote
+      local n = $n 
+      local G1 = g1_named(n)
+      local u = magic_unitary(G1)
+
+      report = @_test_core($reduction,$to_be_reduced,$free_vars)
+
+      length(report) == 0 
+    end
+  else
+    expr = quote
+      local rep = true
+
+      for n in $_n_expr
+        local G1 = g1_named(n)
+        local u = magic_unitary(G1)
+
+        report = @_test_core($reduction,$to_be_reduced,$free_vars)
+
+        length(report) == 0 && continue 
+        println("Failed for n = ",n)
+        println("Reduction: ")
+        println.(report) 
+        rep = false
+        end
+        return rep
+      end
+    end
+    return expr
+end
+
+macro test_reduction(ns::Symbol,path::String)
+  include(path)
+  quote 
+    @test_reduction ns reduction to_be_reduced free_vars
+  end
+end
