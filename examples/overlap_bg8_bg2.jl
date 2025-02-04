@@ -46,10 +46,11 @@ reduction_string(G1, bg(8,s,t,2,u=u)*u[r,4]*u[w,3]-u[2,s]*u[4,t]*bg(2,3,r,w,u=u)
 -sum(wel(3,s,t,u=u)*u[b,2]*u[r,c]*u[w,3] for b in (2:n) for c in (4:n))
 +sum(wel(3,s,t,u=u)*u[3,2]*u[r,c]*u[w,3] for c in (4:n))
 +sum(wel(3,s,t,u=u)*u[b,i]*u[r,c]*u[w,d] for b in (2:n) for i in (3:n) for c in (2:n) for d in (2:n) if  d!=3 && c!=d && i!=t && b!=3 && i!=c)
--sum(u[3,s]*wel(4,t,j,u=u)*u[r,c]*u[w,3] for j in (2:n) for c in (2:n) if j!=t && (j,c)!=(2,2))
+-sum(u[3,s]*wel(b,t,j,u=u)*u[r,c]*u[w,3] for j in (2:n) for b in (4:n) for c in (2:n) if j!=t && (j,c)!=(2,2) && b!=r && (j,c)!=(2,3))
 -sum(u[3,s]*u[b,t]*wel(r,2,c,u=u)*u[w,3] for c in (4:n) for b in (2:n) if b!=3)
-+sum(u[3,s]*u[2,t]*wel(r,a,b,u=u)*u[w,c] for a in (3:n) for b in (2:n) for c in (2:n) if a!=b && c!=3 && (b,c)!=(2,2))
--sum(u[3,s]*u[2,t]*wel(r,t,b,u=u)*u[w,c] for b in (2:n) for c in (2:n) if b != t && (b,c)!=(2,2))
++sum(u[3,s]*u[b,t]*wel(r,a,c,u=u)*u[w,d] for b in (2:n) for a in (3:n) for c in (2:n) for d in (2:n) if b!=3 && a!=c && d!=3 && (c,d)!=(2,2) && a!=t)
+-sum(u[3,s]*u[2,t]*wel(r,t,c,u=u)*u[w,3] for c in (2:n))
++sum(u[3,s]*u[b,t]*wel(r,t,c,u=u)*u[w,c] for b in (4:n) for c in (4:n) if b!=r && c!=t)
 ;
 words=["wel"],
 len=500
