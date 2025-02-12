@@ -54,12 +54,35 @@ r_4 = r_all + (sum(bg(8,s,t,2,u=u)*u[r,i]*u[w,3] for i in (5:n))
 +sum(u[x,s]*u[b,t]*wel(r,a,c,u=u)*u[w,d] for x in (3:n) for b in (2:n) for a in (3:n) for c in (2:n) for d in (2:n) if (b,x)!=(3,3) && a!=c && d!=3 && (c,d)!=(2,2) && a!=t)
 -sum(u[x,s]*u[b,t]*wel(r,t,c,u=u)*u[w,3] for x in (3:n) for b in (2:n) for c in (2:n) if (x,b)!=(3,3) && t!=c));
 
-#print(
-reduction_string(G1, r_4)
-#;
-#words=["rs"],
-#len=500
-#)
+# to graded 3 component: 
+
+r_4_rinj = r_4 +
+(-sum(rwel(s,2,u=u)*u[r,a]*u[w,3] for a in (4:n))
++sum(u[2,s]*wel(r,2,j,u=u)*u[w,3] for j in (4:n))
++sum(rwel(s,a,u=u)*u[r,j]*u[w,d] for a in (3:n) for j in (2:n) for d in (2:n) if j!=d && (j,d)!=(2,2) &&  d!=3 && a!=t && s!=a) #up?
+-sum(u[a,s]*u[b,j]*rinj(r,w,u=u) for a in (2:n) for b in (2:n) for j in (3:n) if b!=r && b!=3 && j!=t && (a,b)!=(2,2))
+-sum(u[a,s]*u[b,j]*rinj(r,w,u=u) for a in (3:n) for b in (2:n) for j in (3:n) if b!=r && b!=3 && j!=t && (a,b)!=(2,2))
++sum(u[2,s]*u[b,t]*rinj(3,w,u=u) for b in (4:n))
+-sum(u[a,s]*u[b,t]*rinj(c,w,u=u) for a in (3:n) for b in (2:n) for c in (2:n) if b!=a && c!=b && c!=3 && c!=w)
+-(n-3)*sum(u[a,s]*u[b,t]*rinj(r,w,u=u) for a in (3:n) for b in (2:n) if b!=3)
+-sum(u[a,s]*u[3,b]*rinj(r,w,u=u) for a in (4:n) for b in (3:n) if b!=s)
+-(n-4)*sum(u[a,s]*u[3,t]*rinj(r,w,u=u) for a in (4:n))
+-sum(u[a,t]*u[b,j]*rinj(r,w,u=u) for a in (2:n) for b in (2:n) for j in (3:n) if b!=r && b!=3 && j!=t && (a,b)!=(2,2)));
+
+print(
+reduction_string(G1, r_4_rinj +
+(
+-sum(u[a,s]*bg(2,i,r,w,u=u) for a in (2:n) for i in (2:n) if i != r && i!=3 && (a,i)!=(2,2))
+-sum(u[a,s]*bg(2,i,r,w,u=u) for a in (3:n) for i in (2:n) if i != r && i!=3)
+-sum(u[a,t]*bg(2,i,r,w,u=u) for a in (3:n) for i in (2:n) if i != r && i!=3)
++sum(bg(8,s,t,i,u=u)*u[w,d] for i in (2:n) for d in (2:n) if d!=3 && (i,d)!=(2,2))
++sum(bg(8,s,t,i,u=u)*u[w,d] for i in (3:n) for d in (2:n))
++sum(bg(8,s,t,i,u=u)*u[r,d] for i in (3:n) for d in (2:n))
+)
+;
+words=["bg"],
+len=50000
+)
 )
 
 
