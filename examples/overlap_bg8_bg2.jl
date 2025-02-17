@@ -1,5 +1,5 @@
 using Oscar
-n = 7
+n = 8
 G1 = g1_named(n)
 u = magic_unitary(n)
 
@@ -9,7 +9,7 @@ G0 = g0_named(n)
 s = 5
 t = 6
 r = 7
-w = 5
+w = 8
 
 
 r_all = bg(8,s,t,2,u=u)*u[r,4]*u[w,3]-u[2,s]*u[4,t]*bg(2,3,r,w,u=u);
@@ -86,13 +86,30 @@ r_4_rwel = r_4_bg +
 print(
 reduction_string(G1, r_4_rwel + 
 (sum(u[2,s]*wel(r,2,j,u=u)*u[w,3] for j in (4:n))
--sum(u[2,s]*wel(r,b,j,u=u)*u[w,d] for b in (3:n) for j in (2:n) for d in (2:n) if j!=b&& b!=s &&b!=t && d!=3 && j!=d) # could be b!=w instead
-+sum(u[2,s]*wel(r,t,j,u=u)*u[w,d] for j in (3:n) for d in (2:n) if j!=d)) 
-;
+-sum(u[2,s]*wel(r,b,j,u=u)*u[w,d] for b in (3:n) for j in (2:n) for d in (2:n) if j!=b&& b!=s && d!=3 && j!=d)
++sum(u[2,s]*wel(r,t,j,u=u)*u[w,d] for j in (2:n) for d in (2:n) if j!=d && j!=t && (j,d)!=(2,2))
++2*sum(u[3,s]*wel(r,2,j,u=u)*u[w,3] for j in (4:n))
+-2*sum(u[3,s]*wel(r,3,j,u=u)*u[w,d] for j in (4:n) for d in (2:n) if d!=3 && d!=j)
+-sum(wel(3,s,3,u=u)*u[r,c]*u[w,d] for c in (2:n) for d in (2:n) if c!=d)
+);
 words=["wel"],
-len=50000
+len=1000
 )
 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
