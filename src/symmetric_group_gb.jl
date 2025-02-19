@@ -265,9 +265,9 @@ function extra_relations(u::Matrix{Generic.FreeAssociativeAlgebraElem{T}}=magic_
     add!(ng, red_sums_v, vcat(red_rows_names, red_cols_names), vcat(red_rows_ids, red_cols_ids))
 
 
-    rinj_wel_col_sums = vcat([rinj_col_sum(i; u) for i in 2:n], [rwel_col_sum(i; u) for i in 4:n])
-    rinj_wel_col_sums_names = vcat(indexed_name("rinjcs", 2:n), indexed_name("rwelcs", 4:n))
-    rinj_wel_col_sums_ids = vcat([Symbol("rinjcs$i") for i in 2:n],[Symbol("rwelcs$i") for i in 4:n])
+    rinj_wel_col_sums = vcat([rinj_col_sum(i; u) for i in 2:n], [rwel_col_sum(i; u) for i in 2:n if i ≠ 3])
+    rinj_wel_col_sums_names = vcat(indexed_name("rinjcs", 2:n), indexed_name("rwelcs", [i for i in 2:n if i ≠ 3]))
+    rinj_wel_col_sums_ids = vcat([Symbol("rinjcs$i") for i in 2:n],[Symbol("rwelcs$i") for i in 2:n if i ≠ 3])
     add!(ng, rinj_wel_col_sums, rinj_wel_col_sums_names, rinj_wel_col_sums_ids)
 
     check_integrity(ng)
