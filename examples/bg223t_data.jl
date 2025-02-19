@@ -1,16 +1,14 @@
-#= Example Case
-using QuantumGB
+function bg223t_data(n::Int)
+#Put requirements for n here
+@assert n > 5
 
-n = 7
-t = 6
 G1 = g1_named(n)
 u = magic_unitary(n)
-=#
 
-free_vars::NamedTuple=(ts="""collect(5:n)""",bs="""[1,2]""")::NamedTuple
-to_be_reduced=raw"""bg(2,2,3,t,u=u)"""
-reduction= raw"""
-(G1["rwel24"]*u[t,3]
+to_be_reduced(t::Int)=bg(2,2,3,t,u=u)
+free_vars= (;ts=5:n)
+
+reduction(t::Int)= (G1["rwel24"]*u[t,3]
 +sum(G1["bg2_2$(i)$(t)"] for i in (4:n) if i!=t)
 -sum(u[j,2]*G1["wel$(t)$(i)3"] for i in (4:n) for j in (2:n))
 +sum(G1["rwel2$i"]*u[t,3] for i in (5:n))
@@ -42,4 +40,6 @@ reduction= raw"""
 +(n-2)*sum(G1["wel$t$(i)3"] for i in (2:n) if i !=3)
 -G1["wel$(t)23"]
 +(n-4)*G1["ip$(t)3"])
-"""
+
+return to_be_reduced, free_vars, reduction
+end

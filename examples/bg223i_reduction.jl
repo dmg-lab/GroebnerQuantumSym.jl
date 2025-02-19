@@ -3,9 +3,8 @@ using ProgressMeter
 #=
 include("../examples/bg223t_data.jl")
 
-test_all(collect(6:12),"../examples/bg223t_data.jl")
 x = 7
-ns = collect(6:12)
+ns = collect(6:10)
 @test_reduction ns "../examples/bg223t_data.jl"
 @test_reduction x "../examples/bg223t_data.jl"
 
@@ -14,6 +13,8 @@ ns = collect(6:12)
 =#
 
 macro _test_core(reduction::Symbol,to_be_reduced::Symbol,free_vars::Symbol)
+  println("ello")
+  println(eval(reduction))
   vars = Meta.parse.((map(x->String(x)[1:end-1],keys(eval(free_vars)))))
   
   free_vars_expr = eval(free_vars)
@@ -45,7 +46,7 @@ macro _test_core(reduction::Symbol,to_be_reduced::Symbol,free_vars::Symbol)
   end
 end
 
-macro test_reduction(n::Symbol,reduction::Symbol,to_be_reduced::Symbol,free_vars::Symbol)
+macro test_reduction(n::Symbol)
   _n_expr = eval(n)
 
   if typeof(_n_expr) == Int64
@@ -53,8 +54,9 @@ macro test_reduction(n::Symbol,reduction::Symbol,to_be_reduced::Symbol,free_vars
       local n = $n 
       local G1 = g1_named(n)
       local u = magic_unitary(G1)
+      local reduction, to_be_reduced, free_vars = data_f(n)
 
-      report = @_test_core($reduction,$to_be_reduced,$free_vars)
+      report = @_test_core($reduction,to_be_reduced,free_vars)
 
       length(report) == 0 
     end
@@ -65,8 +67,10 @@ macro test_reduction(n::Symbol,reduction::Symbol,to_be_reduced::Symbol,free_vars
       for n in $_n_expr
         local G1 = g1_named(n)
         local u = magic_unitary(G1)
+        local reduction, to_be_reduced, free_vars = $data_f(n)
+        println(reduction)
 
-        report = @_test_core($reduction,$to_be_reduced,$free_vars)
+        report = @_test_core(reduction,to_be_reduced,free_vars)
 
         length(report) == 0 && continue 
         println("Failed for n = ",n)
@@ -83,6 +87,6 @@ end
 macro test_reduction(ns::Symbol,path::String)
   include(path)
   quote 
-    @test_reduction ns reduction to_be_reduced free_vars
+    @test_reduction ns
   end
 end
