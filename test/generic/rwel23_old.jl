@@ -52,9 +52,9 @@ filter: none
 coeff:= 1
 
 =#
-@testset "rwel23" verbose=true begin
+@testset "rwel23_old" begin
 println("""
-Testing the general case of rwel23...""")
+Testing the general case of rwel23 (old version)...""")
 
 
 @testset "Degree 2" begin

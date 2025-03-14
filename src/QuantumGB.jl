@@ -10,8 +10,7 @@ export
     interreduce!_noRedTail,
     get_obstruction_pairs,
     getQuantumRelationsByType,
-    lm,
-    GeneratingSet
+    lm
 
 
 include("ReductionAutomata.jl")
@@ -21,6 +20,7 @@ include("interactive_reduce.jl")
 include("the_conjecture.jl")
 include("parallelized_gbsteps.jl")
 include("testing_functions.jl")
+include("./general_proof/utils.jl")
 #include("cubep.jl")
 #include("pointed_Bases.jl")
 

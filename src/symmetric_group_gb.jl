@@ -404,3 +404,28 @@ end
 function g1_extended(n::Int)
   ng = g1_named(n)
 end
+
+
+function g00_named(n::Int=4; u=-1)
+  if u == -1
+    u = magic_unitary(n)
+  end
+
+  cs = [col_sum(i, u) for i in 1:n]
+  cs_names = indexed_name("cs", 1:n)
+  cs_ids = [Symbol("cs$i") for i in 1:n]
+  ng = named_generators(cs, cs_names, cs_ids)  
+
+  rs = [row_sum(i, u) for i in 1:n]
+  rs_names = indexed_name("rs", 1:n)
+  rs_ids = [Symbol("rs$i") for i in 1:n]
+  add!(ng, rs, rs_names, rs_ids)
+
+  #Idempotent relations but not the ones that contain i,j = 1
+  ips = [ip(i,j; u=u) for i in 1:n for j in 1:n]
+  ip_names = indexed_name("ip", [parse(Int, "$i$j") for i in 1:n for j in 1:n])
+  ip_ids = [Symbol("ip$i$j") for i in 1:n for j in 1:n]
+  add!(ng, ips, ip_names, ip_ids)
+  
+  return ng
+end
