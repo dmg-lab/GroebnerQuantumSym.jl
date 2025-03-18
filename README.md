@@ -16,8 +16,8 @@ Finite Gröbner bases for quantum symmetric groups </br>
 
 - **Leonard Schmitz**  
   Technische Universität Berlin, Algebraic and Geometric Methods in Data Analysis, Berlin  
-  Email: [lschmitz[at]math.tu-berlin.de](mailto:lschmitz@math.tu-berlin.de)
+  Email: [lschmitz[at]math.tu-berlin.de](mailto:lschmitz[at]math.tu-berlin.de)
 
 - **Marcel Wack**  
   Technische Universität Berlin, Chair of Discrete Mathematics / Geometry, Berlin  
-  Email: [wack[at]math.tu-berlin.de](mailto:wack@math.tu-berlin.de)
+  Email: [wack[at]math.tu-berlin.de](mailto:wack[at]math.tu-berlin.de)
